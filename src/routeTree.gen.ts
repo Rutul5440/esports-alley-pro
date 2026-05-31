@@ -11,12 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as GoogleAuthMockRouteImport } from './routes/google-auth-mock'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedScrimsRouteImport } from './routes/_authenticated/scrims'
+import { Route as AuthenticatedScoutingRouteImport } from './routes/_authenticated/scouting'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCommunityRouteImport } from './routes/_authenticated/community'
+import { Route as AuthenticatedClipsRouteImport } from './routes/_authenticated/clips'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -26,6 +33,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleAuthMockRoute = GoogleAuthMockRouteImport.update({
+  id: '/google-auth-mock',
+  path: '/google-auth-mock',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -47,6 +59,27 @@ const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
   path: '/upload',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedScrimsRoute = AuthenticatedScrimsRouteImport.update({
+  id: '/scrims',
+  path: '/scrims',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedScoutingRoute = AuthenticatedScoutingRouteImport.update({
+  id: '/scouting',
+  path: '/scouting',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
@@ -57,22 +90,46 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCommunityRoute = AuthenticatedCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedClipsRoute = AuthenticatedClipsRouteImport.update({
+  id: '/clips',
+  path: '/clips',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/google-auth-mock': typeof GoogleAuthMockRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/clips': typeof AuthenticatedClipsRoute
+  '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explore': typeof AuthenticatedExploreRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/scouting': typeof AuthenticatedScoutingRoute
+  '/scrims': typeof AuthenticatedScrimsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/profile/$username': typeof ProfileUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/google-auth-mock': typeof GoogleAuthMockRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/clips': typeof AuthenticatedClipsRoute
+  '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explore': typeof AuthenticatedExploreRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/scouting': typeof AuthenticatedScoutingRoute
+  '/scrims': typeof AuthenticatedScrimsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/profile/$username': typeof ProfileUsernameRoute
 }
@@ -80,10 +137,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/google-auth-mock': typeof GoogleAuthMockRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/_authenticated/clips': typeof AuthenticatedClipsRoute
+  '/_authenticated/community': typeof AuthenticatedCommunityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/explore': typeof AuthenticatedExploreRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/scouting': typeof AuthenticatedScoutingRoute
+  '/_authenticated/scrims': typeof AuthenticatedScrimsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/profile/$username': typeof ProfileUsernameRoute
 }
@@ -91,29 +155,50 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/google-auth-mock'
     | '/login'
     | '/register'
+    | '/clips'
+    | '/community'
     | '/dashboard'
     | '/explore'
+    | '/notifications'
+    | '/scouting'
+    | '/scrims'
+    | '/settings'
     | '/upload'
     | '/profile/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/google-auth-mock'
     | '/login'
     | '/register'
+    | '/clips'
+    | '/community'
     | '/dashboard'
     | '/explore'
+    | '/notifications'
+    | '/scouting'
+    | '/scrims'
+    | '/settings'
     | '/upload'
     | '/profile/$username'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/google-auth-mock'
     | '/login'
     | '/register'
+    | '/_authenticated/clips'
+    | '/_authenticated/community'
     | '/_authenticated/dashboard'
     | '/_authenticated/explore'
+    | '/_authenticated/notifications'
+    | '/_authenticated/scouting'
+    | '/_authenticated/scrims'
+    | '/_authenticated/settings'
     | '/_authenticated/upload'
     | '/profile/$username'
   fileRoutesById: FileRoutesById
@@ -121,6 +206,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  GoogleAuthMockRoute: typeof GoogleAuthMockRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
@@ -140,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/google-auth-mock': {
+      id: '/google-auth-mock'
+      path: '/google-auth-mock'
+      fullPath: '/google-auth-mock'
+      preLoaderRoute: typeof GoogleAuthMockRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -170,6 +263,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUploadRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/scrims': {
+      id: '/_authenticated/scrims'
+      path: '/scrims'
+      fullPath: '/scrims'
+      preLoaderRoute: typeof AuthenticatedScrimsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/scouting': {
+      id: '/_authenticated/scouting'
+      path: '/scouting'
+      fullPath: '/scouting'
+      preLoaderRoute: typeof AuthenticatedScoutingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/explore': {
       id: '/_authenticated/explore'
       path: '/explore'
@@ -184,18 +305,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/community': {
+      id: '/_authenticated/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof AuthenticatedCommunityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/clips': {
+      id: '/_authenticated/clips'
+      path: '/clips'
+      fullPath: '/clips'
+      preLoaderRoute: typeof AuthenticatedClipsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedClipsRoute: typeof AuthenticatedClipsRoute
+  AuthenticatedCommunityRoute: typeof AuthenticatedCommunityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedScoutingRoute: typeof AuthenticatedScoutingRoute
+  AuthenticatedScrimsRoute: typeof AuthenticatedScrimsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedClipsRoute: AuthenticatedClipsRoute,
+  AuthenticatedCommunityRoute: AuthenticatedCommunityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExploreRoute: AuthenticatedExploreRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedScoutingRoute: AuthenticatedScoutingRoute,
+  AuthenticatedScrimsRoute: AuthenticatedScrimsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
 }
 
@@ -206,6 +353,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  GoogleAuthMockRoute: GoogleAuthMockRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
@@ -213,3 +361,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

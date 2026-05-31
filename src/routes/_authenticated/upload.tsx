@@ -1,7 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent, type DragEvent } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { UploadCloud, Film, X, Loader2, CheckCircle2 } from "lucide-react";
+import { clipsApi } from "@/lib/api";
+import { games } from "@/lib/mock-data";
+import { UploadCloud, Film, X, Loader2, CheckCircle2, Tag } from "lucide-react";
+import type { GameId } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({ meta: [{ title: "Upload clip — ConqLink" }] }),
@@ -12,10 +15,15 @@ function UploadClip() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+  const [game, setGame] = useState<GameId>("bgmi");
+  const [tags, setTags] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [drag, setDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault(); setDrag(false);
@@ -27,10 +35,35 @@ function UploadClip() {
     e.preventDefault();
     if (!file || !title) return;
     setUploading(true);
-    // Replace with: api.post('/clips', formData, { headers: 'multipart/form-data' })
-    await new Promise((r) => setTimeout(r, 1500));
-    setUploading(false); setDone(true);
-    setTimeout(() => navigate({ to: "/dashboard" }), 1200);
+    setError("");
+    setProgress(10);
+
+    try {
+      const formData = new FormData();
+      formData.append("clip", file);
+      formData.append("title", title);
+      formData.append("description", desc);
+      formData.append("game", game);
+      if (tags) formData.append("tags", tags);
+      if (thumbnail) formData.append("thumbnail", thumbnail);
+
+      // Simulate progress while uploading
+      const progressInterval = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 15, 90));
+      }, 500);
+
+      await clipsApi.upload(formData);
+
+      clearInterval(progressInterval);
+      setProgress(100);
+      setUploading(false);
+      setDone(true);
+      setTimeout(() => navigate({ to: "/clips" }), 1500);
+    } catch (err: any) {
+      setUploading(false);
+      setProgress(0);
+      setError(err?.response?.data?.message || "Upload failed. Please try again.");
+    }
   };
 
   return (
@@ -75,26 +108,53 @@ function UploadClip() {
             )}
           </div>
 
-          <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Clip title</span>
-            <input
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="4K clutch on Erangel"
-              className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
-          </label>
+          {/* Progress bar */}
+          {uploading && (
+            <div className="space-y-2">
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-gradient-gold transition-all duration-500" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">Uploading... {progress}%</p>
+            </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Clip title</span>
+              <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="4K clutch on Erangel"
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Game</span>
+              <select value={game} onChange={(e) => setGame(e.target.value as GameId)}
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30">
+                {games.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </select>
+            </label>
+          </div>
 
           <label className="block">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Description (optional)</span>
-            <textarea
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              rows={3}
-              className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
-            />
+            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3}
+              className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
           </label>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1"><Tag size={12} /> Tags (comma separated)</span>
+              <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="clutch, snipe, ranked"
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thumbnail (optional)</span>
+              <input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
+                className="mt-1.5 w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20" />
+            </label>
+          </div>
+
+          {error && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</div>
+          )}
 
           <button
             type="submit"

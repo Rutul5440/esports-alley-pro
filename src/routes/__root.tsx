@@ -57,10 +57,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ConqLink — LinkedIn for BGMI Players" },
-      { name: "description", content: "Esports profile network for BGMI players. Showcase rank, stats, clips. Get scouted by orgs." },
-      { property: "og:title", content: "ConqLink — LinkedIn for BGMI Players" },
-      { property: "og:description", content: "Build your esports profile. Share clips. Get recruited." },
+      { title: "ConqLink — The Professional Network for Esports Players" },
+      { name: "description", content: "Multi-game esports platform. Showcase rank, stats, clips across BGMI, Valorant, CS2 & more. Get scouted by orgs." },
+      { property: "og:title", content: "ConqLink — The Professional Network for Esports Players" },
+      { property: "og:description", content: "Build your esports profile across multiple games. Share clips. Get recruited by tier-1 orgs." },
       { property: "og:type", content: "website" },
     ],
     links: [
