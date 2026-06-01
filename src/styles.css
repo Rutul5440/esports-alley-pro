@@ -4,8 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* LinkedIn for Gamers — "Conqueror Gold" design system
- * Near-black surfaces, luxury gold accents (BGMI Conqueror vibe).
+/* ConqLink "Obsidian Cyber-Gold & Aurora Void" design system
+ * Deep obsidian surfaces, cyberpunk cyan-violet auroras, luminous gold accents.
  * All tokens in oklch. Never hardcode colors in components.
  */
 
@@ -54,36 +54,36 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
-  /* Conqueror Gold — dark by default */
-  --background: oklch(0.16 0.005 60);
+  /* Premium Obsidian Void Dark Theme */
+  --background: oklch(0.10 0.005 240);    /* Obsidian Void Black */
   --foreground: oklch(0.96 0.015 85);
-  --card: oklch(0.20 0.006 60);
+  --card: oklch(0.13 0.006 240 / 0.8);     /* Glassmorphic Dark Obsidian */
   --card-foreground: oklch(0.96 0.015 85);
-  --popover: oklch(0.20 0.006 60);
+  --popover: oklch(0.14 0.007 240);
   --popover-foreground: oklch(0.96 0.015 85);
 
-  --primary: oklch(0.78 0.13 85);         /* gold */
-  --primary-foreground: oklch(0.15 0.005 60);
-  --secondary: oklch(0.26 0.008 60);
+  --primary: oklch(0.85 0.16 90);         /* Cyber Gold */
+  --primary-foreground: oklch(0.10 0.005 240);
+  --secondary: oklch(0.18 0.008 240);
   --secondary-foreground: oklch(0.96 0.015 85);
-  --muted: oklch(0.24 0.006 60);
-  --muted-foreground: oklch(0.70 0.02 80);
-  --accent: oklch(0.30 0.04 70);
+  --muted: oklch(0.16 0.006 240);
+  --muted-foreground: oklch(0.68 0.02 240);
+  --accent: oklch(0.20 0.04 240);
   --accent-foreground: oklch(0.96 0.015 85);
   --destructive: oklch(0.60 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0.008 65 / 0.6);
-  --input: oklch(0.24 0.006 60);
-  --ring: oklch(0.78 0.13 85);
+  --border: oklch(0.22 0.008 240 / 0.5);   /* Fine Cybernetic Blue-Cyan Border */
+  --input: oklch(0.14 0.006 240);
+  --ring: oklch(0.85 0.16 90);
 
-  --gold: oklch(0.78 0.13 85);
-  --gold-soft: oklch(0.88 0.10 90);
-  --surface-1: oklch(0.20 0.006 60);
-  --surface-2: oklch(0.24 0.008 65);
+  --gold: oklch(0.85 0.16 90);
+  --gold-soft: oklch(0.92 0.10 90);
+  --surface-1: oklch(0.13 0.006 240);
+  --surface-2: oklch(0.18 0.008 240);
 
-  /* Rank tiers */
+  /* Rank Tiers */
   --rank-bronze: oklch(0.60 0.12 50);
   --rank-silver: oklch(0.80 0.01 250);
   --rank-gold: oklch(0.80 0.14 85);
@@ -93,11 +93,13 @@
   --rank-ace: oklch(0.62 0.25 25);
   --rank-conqueror: oklch(0.78 0.18 70);
 
-  --shadow-gold: 0 10px 40px -10px oklch(0.78 0.13 85 / 0.35);
-  --shadow-elevated: 0 20px 60px -20px oklch(0 0 0 / 0.6);
-  --gradient-gold: linear-gradient(135deg, oklch(0.82 0.14 90), oklch(0.70 0.15 70));
-  --gradient-surface: linear-gradient(180deg, oklch(0.22 0.008 65), oklch(0.18 0.005 60));
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.30 0.10 80 / 0.25), transparent 60%);
+  --shadow-gold: 0 10px 40px -10px oklch(0.85 0.16 90 / 0.3);
+  --shadow-elevated: 0 20px 60px -20px oklch(0 0 0 / 0.7);
+  --gradient-gold: linear-gradient(135deg, oklch(0.88 0.15 90), oklch(0.75 0.16 70));
+  --gradient-surface: linear-gradient(180deg, oklch(0.15 0.006 240), oklch(0.11 0.005 240));
+  
+  /* Luminous Cyberpunk Auroras */
+  --gradient-hero: radial-gradient(circle at 50% -20%, oklch(0.35 0.15 280 / 0.35), transparent 55%), radial-gradient(circle at 10% 20%, oklch(0.25 0.12 180 / 0.08), transparent 35%);
 }
 
 @layer base {
@@ -109,7 +111,7 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
   ::selection { background: var(--gold); color: var(--primary-foreground); }
   
   /* Global pointer cursor implementation for action triggers */
@@ -130,18 +132,40 @@
   }
   .shadow-gold { box-shadow: var(--shadow-gold); }
   .shadow-elevated { box-shadow: var(--shadow-elevated); }
-  .ring-gold { box-shadow: 0 0 0 1px var(--gold), 0 0 0 4px oklch(0.78 0.13 85 / 0.15); }
+  .ring-gold { box-shadow: 0 0 0 1px var(--gold), 0 0 0 4px oklch(0.85 0.16 90 / 0.15); }
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Cybernetic Grid Matrix Overlays */
+  .grid-overlay {
+    background-size: 24px 24px;
+    background-image: radial-gradient(circle, oklch(0.96 0.015 85 / 0.02) 1px, transparent 1px);
+  }
+
+  /* Hologram Glowing Effects */
+  .hologram-glow {
+    position: relative;
+  }
+  .hologram-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, oklch(0.85 0.16 90 / 0.4), oklch(0.40 0.12 180 / 0.1), oklch(0.85 0.16 90 / 0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 }
 
 /* ─── Micro-Animations ─────────────────────────────────── */
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes shimmer {
@@ -149,8 +173,8 @@
   100% { background-position: 200% 0; }
 }
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 8px oklch(0.78 0.13 85 / 0.2); }
-  50%      { box-shadow: 0 0 20px oklch(0.78 0.13 85 / 0.4); }
+  0%, 100% { box-shadow: 0 0 8px oklch(0.85 0.16 90 / 0.15); }
+  50%      { box-shadow: 0 0 20px oklch(0.85 0.16 90 / 0.35); }
 }
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(20px); }
@@ -159,7 +183,7 @@
 
 /* Cards and articles get a subtle enter animation */
 article, section > .rounded-lg, section > .rounded-xl {
-  animation: fadeInUp 0.35s ease-out both;
+  animation: fadeInUp 0.4s ease-out both;
 }
 
 /* Skeleton shimmer for loading states */
@@ -176,16 +200,89 @@ article, section > .rounded-lg, section > .rounded-xl {
 
 /* Smooth transitions on interactive elements */
 button, a, input, select, textarea {
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
 }
 
 /* Card hover lift effect */
-article:hover {
-  transform: translateY(-1px);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  border-color: oklch(0.85 0.16 90 / 0.4);
+  box-shadow: 0 12px 30px -10px oklch(0 0 0 / 0.6), 0 0 16px -2px oklch(0.85 0.16 90 / 0.15);
 }
 
 /* Mobile drawer animation */
 nav[class*="absolute"] {
   animation: slideInRight 0.2s ease-out;
 }
+
+/* ─── Premium Glassmorphism & Blended Background for Auth ─── */
+
+.auth-page-bg {
+  background-color: oklch(0.09 0.005 240); /* Deep Obsidian Void */
+  background-image: 
+    radial-gradient(circle at 50% 35%, oklch(0.35 0.15 280 / 0.35) 0%, transparent 65%), /* Cyber Aurora Glow */
+    linear-gradient(to bottom, rgba(13, 13, 16, 0.55), rgba(13, 13, 16, 0.75)), /* Translucent dark overlay for legibility */
+    url('/background-gaming.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.glass-auth-card {
+  background: rgba(18, 18, 22, 0.45) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    0 30px 70px -15px rgba(0, 0, 0, 0.8), 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.glass-auth-sidebar {
+  background: rgba(13, 13, 16, 0.35) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.glass-auth-input {
+  background: rgba(25, 25, 32, 0.4) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: oklch(0.96 0.015 85) !important;
+}
+
+.glass-auth-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(15deg) !important;
+  cursor: pointer !important;
+  opacity: 0.7;
+}
+
+.glass-auth-input::-webkit-calendar-picker-indicator:hover {
+  filter: invert(1) sepia(1) saturate(10) hue-rotate(15deg) !important;
+  opacity: 1;
+}
+
+.glass-auth-input:focus {
+  background: rgba(30, 30, 38, 0.65) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 15px oklch(0.85 0.16 90 / 0.2) !important;
+}
+
+.glass-auth-item {
+  background: rgba(25, 25, 32, 0.35) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.glass-auth-item-active {
+  background: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border-color: var(--color-primary) !important;
+}
+

@@ -70,7 +70,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-background/40 backdrop-blur-lg shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link to="/" className="group flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-gold shadow-gold">
@@ -109,8 +109,8 @@ export function Navbar() {
                     value={searchQuery}
                     onFocus={() => setSearchOpen(true)}
                     onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }}
-                    placeholder="Search..."
-                    className="w-44 rounded-md border border-border bg-input py-1.5 pl-8 pr-3 text-sm focus:w-64 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                    placeholder="Search matrix..."
+                    className="w-44 rounded-md border border-white/10 bg-input/60 py-1.5 pl-8 pr-3 text-sm placeholder:text-muted-foreground/50 focus:w-64 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30 hover:border-white/20 transition-all shadow-inner"
                   />
                 </div>
                 {searchOpen && searchQuery.length >= 2 && (
@@ -173,8 +173,8 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">Log in</Link>
-                <Link to="/register" className="rounded-md bg-gradient-gold px-4 py-1.5 text-sm font-semibold text-primary-foreground shadow-gold transition-opacity hover:opacity-90">Join</Link>
+                <Link to="/login" className="rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-300 hover:text-foreground hover:bg-white/5">Log in</Link>
+                <Link to="/register" className="rounded-md bg-gradient-gold px-5 py-1.5 text-sm font-semibold text-primary-foreground shadow-gold hover:shadow-[0_0_20px_oklch(0.85_0.16_90_/_0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">Join</Link>
               </>
             )}
           </div>
