@@ -17,6 +17,47 @@ const roles = ["IGL", "Assaulter", "Support", "Scout", "Sniper", "Fragger", "All
 const ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Ace Master", "Conqueror"];
 const orgTypes = ["Esports Team", "Gaming Company", "Content Studio", "Tournament Organizer", "Sponsor"];
 
+const GAME_CONFIG: Record<string, {
+  name: string;
+  ranks: string[];
+  roles: string[];
+  hasUID?: boolean;
+  uidLabel?: string;
+}> = {
+  bgmi: {
+    name: "BGMI",
+    ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Ace Master", "Conqueror"],
+    roles: ["IGL", "Assaulter", "Support", "Scout", "Sniper", "Fragger", "All-rounder"],
+    hasUID: true,
+    uidLabel: "BGMI UID (Optional)",
+  },
+  valorant: {
+    name: "Valorant",
+    ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"],
+    roles: ["Duelist", "Initiator", "Controller", "Sentinel"],
+  },
+  cs2: {
+    name: "CS2",
+    ranks: ["Silver", "Gold Nova", "Master Guardian", "Legendary Eagle", "Supreme Master", "Global Elite"],
+    roles: ["Entry Fragger", "AWPer", "Lurker", "Support", "In-Game Leader"],
+  },
+  "free-fire": {
+    name: "Free Fire",
+    ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
+    roles: ["Rusher", "Sniper", "Support", "Flanker", "IGL"],
+  },
+  "apex-legends": {
+    name: "Apex Legends",
+    ranks: ["Rookie", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Apex Predator"],
+    roles: ["Offensive", "Defensive", "Support", "Recon"],
+  },
+  "pubg-ns": {
+    name: "PUBG New State",
+    ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Contender", "Master", "Conqueror"],
+    roles: ["IGL", "Assaulter", "Support", "Scout", "Sniper"],
+  },
+};
+
 function Register() {
   const { register, completeProfile, googleLogin } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +73,7 @@ function Register() {
     country: "India",
     dateOfBirth: "",
     bgmiUID: "",
-    preferredGames: ["bgmi"] as GameId[],
+    preferredGames: [] as GameId[],
     inGameRole: "Fragger",
     rank: "Ace",
     preferredMode: "Squad",
@@ -46,6 +87,15 @@ function Register() {
     website: "",
     foundedYear: "2024",
     recruitmentRegions: "India, South Asia",
+  });
+
+  const [gameData, setGameData] = useState<Record<string, { rank: string; role: string; bgmiUID?: string }>>({
+    bgmi: { rank: "Ace", role: "Fragger", bgmiUID: "" },
+    valorant: { rank: "Gold", role: "Controller" },
+    cs2: { rank: "Master Guardian", role: "AWPer" },
+    "free-fire": { rank: "Diamond", role: "Rusher" },
+    "apex-legends": { rank: "Platinum", role: "Support" },
+    "pubg-ns": { rank: "Master", role: "Assaulter" },
   });
 
   const usernameCheck = useMutation({ mutationFn: authApi.checkUsername });
@@ -123,6 +173,12 @@ function Register() {
         console.error("Username availability check failed:", err);
       }
     }
+    if (currentStep === 2) {
+      if (role === "player" && form.preferredGames.length === 0) {
+        setError("Please select at least one game before continuing.");
+        return false;
+      }
+    }
     return true;
   };
 
@@ -135,13 +191,9 @@ function Register() {
   const handleStepClick = async (targetStep: number) => {
     if (targetStep === step) return;
     if (targetStep > step) {
-      // Validate moving forward
-      const isValid = await validateStep(step);
-      if (!isValid) return;
-      if (targetStep === 3 && step === 1) {
-        const isStep2Valid = await validateStep(2);
-        if (!isStep2Valid) return;
-      }
+      // Do not allow skipping forward by clicking the sidebar stepper directly.
+      // Users must strictly use the "Continue" button or hit Enter to move forward.
+      return;
     }
     setError("");
     setStep(targetStep);
@@ -149,6 +201,11 @@ function Register() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (step < totalSteps) {
+      // Intercept implicit submissions (like hitting Enter) on steps 1 and 2
+      next();
+      return;
+    }
     setError("");
     try {
       await register(form.username, form.email, form.password, role, {
@@ -158,7 +215,9 @@ function Register() {
       });
       
       // Clean UID so empty inputs do not crash MongoDB sparse unique indices
-      const cleanBGMIUID = form.bgmiUID && form.bgmiUID.trim() !== "" ? form.bgmiUID.trim() : undefined;
+      const cleanBGMIUID = form.preferredGames.includes("bgmi") && gameData.bgmi?.bgmiUID?.trim() !== "" 
+        ? gameData.bgmi.bgmiUID!.trim() 
+        : undefined;
 
       await completeProfile(
         role === "player"
@@ -169,9 +228,16 @@ function Register() {
               dateOfBirth: form.dateOfBirth || undefined,
               bgmiUID: cleanBGMIUID,
               preferredGames: form.preferredGames,
-              gamePreferences: form.preferredGames.map((game) => ({ game, rank: form.rank, kd: 0, winRate: 0, avgDamage: 0, totalMatches: 0 })),
-              role: form.inGameRole,
-              roles: [form.inGameRole],
+              gamePreferences: form.preferredGames.map((game) => ({ 
+                game, 
+                rank: gameData[game]?.rank || "Bronze", 
+                kd: 0, 
+                winRate: 0, 
+                avgDamage: 0, 
+                totalMatches: 0 
+              })),
+              role: form.preferredGames.length > 0 ? gameData[form.preferredGames[0]]?.role || "Fragger" : "Fragger",
+              roles: form.preferredGames.map((g) => gameData[g]?.role).filter(Boolean),
               preferredMode: form.preferredMode,
               playStyle: form.playStyle,
               languages: form.languages.split(",").map((item) => item.trim()).filter(Boolean),
@@ -187,9 +253,13 @@ function Register() {
               website: form.website || undefined,
               foundedYear: form.foundedYear ? Number(form.foundedYear) : undefined,
               activeGames: form.preferredGames,
-              openRoles: [form.inGameRole],
+              openRoles: form.preferredGames.length > 0 ? [gameData[form.preferredGames[0]]?.role || "Fragger"] : ["Fragger"],
               recruitmentRegions: form.recruitmentRegions.split(",").map((item) => item.trim()).filter(Boolean),
-              recruitmentCriteria: { minRank: form.rank, roles: [form.inGameRole], minKD: 0 },
+              recruitmentCriteria: { 
+                minRank: form.preferredGames.length > 0 ? gameData[form.preferredGames[0]]?.rank || "Bronze" : "Bronze", 
+                roles: form.preferredGames.length > 0 ? [gameData[form.preferredGames[0]]?.role || "Fragger"] : ["Fragger"], 
+                minKD: 0 
+              },
             },
       );
       navigate({ to: "/dashboard" });
@@ -226,10 +296,10 @@ function Register() {
           <span className="font-display text-xl font-bold tracking-tight text-white">Conq<span className="text-gradient-gold">Link</span></span>
         </Link>
 
-        <div className="mt-8 overflow-hidden rounded-2xl glass-auth-card shadow-2xl">
-          <div className="grid lg:grid-cols-[380px_1fr]">
+        <div className="mt-8 overflow-hidden rounded-2xl glass-auth-card shadow-2xl h-auto lg:h-[680px]">
+          <div className="grid lg:grid-cols-[380px_1fr] h-full">
             {/* Sidebar with dynamic values */}
-            <aside className="p-6 bg-black/15 lg:border-r border-b lg:border-b-0 border-white/5 space-y-6 flex flex-col justify-between">
+            <aside className="p-6 bg-black/15 lg:border-r border-b lg:border-b-0 border-white/5 space-y-6 flex flex-col justify-between h-full overflow-y-auto custom-scrollbar">
               <div>
                 <h1 className="font-display text-2xl font-bold text-white tracking-tight">Create your profile</h1>
                 <p className="mt-2 text-xs leading-5 text-zinc-400">Set up the account, competitive identity, and recruitment signals in one pass.</p>
@@ -289,17 +359,18 @@ function Register() {
             </aside>
 
             {/* Registration Form */}
-            <form onSubmit={submit} className="p-6 sm:p-8 flex flex-col justify-between min-h-[500px] bg-black/25">
-              <div>
-                <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-6">
+            <form onSubmit={submit} className="p-6 sm:p-8 flex flex-col justify-between h-auto lg:h-full bg-black/25 overflow-hidden">
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-6 shrink-0">
                   <h2 className="text-base font-display font-bold text-white tracking-tight">
                     Step {step}: {step === 1 ? "Account details" : step === 2 ? (role === "player" ? "Gaming identity" : "Organization details") : (role === "player" ? "Profile setup" : "Recruitment setup")}
                   </h2>
                   <span className="text-[10px] text-zinc-400 font-mono">Step {step} of 3</span>
                 </div>
 
-                {step === 1 && (
-                  <div className="space-y-5">
+                <div className="flex-1 lg:overflow-y-auto pr-0 lg:pr-2 space-y-5 custom-scrollbar lg:max-h-[440px]">
+                  {step === 1 && (
+                    <div className="space-y-5">
                     <div className="grid gap-4 md:grid-cols-2">
                       <Input 
                         label={role === "player" ? "Full name" : "Organization name"} 
@@ -380,39 +451,128 @@ function Register() {
                   </div>
                 )}
 
-                {step === 2 && (
+                {step === 2 && role === "player" && (
                   <div className="grid gap-4 md:grid-cols-2">
-                    {role === "player" ? (
-                      <Input 
-                        label="BGMI UID (Optional)" 
-                        value={form.bgmiUID} 
-                        onChange={(v) => update("bgmiUID", v)} 
-                        placeholder="e.g. 5500112233" 
-                        autoComplete="off"
-                      />
+                    {/* 1. Games Selection Shuffled to the Top */}
+                    <div className="md:col-span-2 border-b border-white/5 pb-5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">Games Played *</span>
+                      <div className="mt-2.5 flex flex-wrap gap-2">
+                        {games.map((game) => (
+                          <button 
+                            type="button" 
+                            key={game.id} 
+                            onClick={() => toggleGame(game.id)} 
+                            className={cn(
+                              "rounded-md border px-4 py-2 text-xs font-semibold cursor-pointer transition-all duration-300", 
+                              form.preferredGames.includes(game.id) 
+                                ? "glass-auth-item-active text-primary-foreground border-primary shadow-sm" 
+                                : "border-white/5 bg-white/[0.01] text-zinc-400 hover:border-primary/50 hover:bg-white/[0.03]"
+                            )}
+                          >
+                            {game.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 2. Empty State Instructions */}
+                    {form.preferredGames.length === 0 ? (
+                      <div className="md:col-span-2 py-10 text-center glass-auth-item rounded-xl border border-white/5 p-6 animate-fade-in">
+                        <Gamepad2 className="mx-auto text-primary animate-pulse mb-3" size={32} />
+                        <h3 className="font-display text-sm font-bold text-white">No games selected</h3>
+                        <p className="mt-1.5 text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                          Please select one or more games above to configure your customized ranks, roles, and competitive profile statistics.
+                        </p>
+                      </div>
                     ) : (
-                      <Select 
-                        label="Organization type" 
-                        value={form.orgType} 
-                        options={orgTypes} 
-                        onChange={(v) => update("orgType", v)} 
-                      />
+                      /* 3. Dynamic Ranks and Roles Sub-forms per Game */
+                      form.preferredGames.map((gameId) => (
+                        <div key={gameId} className="md:col-span-2 glass-auth-item rounded-xl border border-white/5 p-5 space-y-4 animate-fade-in relative overflow-hidden">
+                          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-gold" />
+                          
+                          <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                            <h3 className="font-display text-xs font-black text-white flex items-center gap-2 tracking-wider">
+                              <Trophy size={14} className="text-primary" />
+                              {GAME_CONFIG[gameId]?.name} Profile Details
+                            </h3>
+                            <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 bg-white/[0.03] px-2 py-0.5 rounded">Configure</span>
+                          </div>
+                          
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <Select 
+                              label="In-Game Role *" 
+                              value={gameData[gameId]?.role || ""} 
+                              options={GAME_CONFIG[gameId]?.roles || []} 
+                              onChange={(v) => {
+                                setGameData(prev => ({
+                                  ...prev,
+                                  [gameId]: { ...prev[gameId], role: v }
+                                }));
+                              }} 
+                            />
+                            <Select 
+                              label="Current Rank *" 
+                              value={gameData[gameId]?.rank || ""} 
+                              options={GAME_CONFIG[gameId]?.ranks || []} 
+                              onChange={(v) => {
+                                setGameData(prev => ({
+                                  ...prev,
+                                  [gameId]: { ...prev[gameId], rank: v }
+                                }));
+                              }} 
+                            />
+                            {GAME_CONFIG[gameId]?.hasUID && (
+                              <div className="md:col-span-2">
+                                <Input 
+                                  label={GAME_CONFIG[gameId]?.uidLabel || "BGMI UID"} 
+                                  value={gameData[gameId]?.bgmiUID || ""} 
+                                  onChange={(v) => {
+                                    setGameData(prev => ({
+                                      ...prev,
+                                      [gameId]: { ...prev[gameId], bgmiUID: v }
+                                    }));
+                                  }} 
+                                  placeholder="e.g. 5500112233"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
                     )}
-                    <Select label={role === "player" ? "In-game role" : "Priority role"} value={form.inGameRole} options={roles} onChange={(v) => update("inGameRole", v)} />
-                    <Select label="Minimum/current rank" value={form.rank} options={ranks} onChange={(v) => update("rank", v)} />
+
+                    {/* Global Preferences (Only shown when games are active) */}
+                    {form.preferredGames.length > 0 && (
+                      <div className="md:col-span-2 grid gap-4 md:grid-cols-2 pt-4 border-t border-white/5">
+                        <Select label="Preferred Mode" value={form.preferredMode} options={["Squad", "Duo", "Solo"]} onChange={(v) => update("preferredMode", v)} />
+                        <Select label="Play style" value={form.playStyle} options={["Aggressive", "Passive", "Balanced"]} onChange={(v) => update("playStyle", v)} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {step === 2 && role === "organization" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Select 
+                      label="Organization type" 
+                      value={form.orgType} 
+                      options={orgTypes} 
+                      onChange={(v) => update("orgType", v)} 
+                    />
+                    <Select label="Priority role" value={form.inGameRole} options={roles} onChange={(v) => update("inGameRole", v)} />
+                    <Select label="Minimum rank criteria" value={form.rank} options={ranks} onChange={(v) => update("rank", v)} />
                     <Select label="Preferred Mode" value={form.preferredMode} options={["Solo", "Duo", "Squad"]} onChange={(v) => update("preferredMode", v)} />
                     <Select label="Play style" value={form.playStyle} options={["Aggressive", "Passive", "Balanced"]} onChange={(v) => update("playStyle", v)} />
-                    {role === "organization" && (
-                      <Input 
-                        label="Website" 
-                        value={form.website} 
-                        onChange={(v) => update("website", v)} 
-                        placeholder="e.g. esportscompany.com" 
-                        autoComplete="off"
-                      />
-                    )}
+                    <Input 
+                      label="Website" 
+                      value={form.website} 
+                      onChange={(v) => update("website", v)} 
+                      placeholder="e.g. esportscompany.com" 
+                      autoComplete="off"
+                    />
                     <div className="md:col-span-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">Games played / managed</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">Games Managed</span>
                       <div className="mt-2.5 flex flex-wrap gap-2">
                         {games.map((game) => (
                           <button 
@@ -452,10 +612,11 @@ function Register() {
                     )}
                   </div>
                 )}
-              </div>
+                </div> {/* Closes scrollable content container */}
+              </div> {/* Closes flex-col wrapper */}
 
               {/* Navigation Action Footer */}
-              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
                 {error && <p className="text-xs text-red-400 font-semibold text-left flex-1">{error}</p>}
                 
                 <div className="flex gap-3 ml-auto w-full sm:w-auto justify-end">
@@ -469,6 +630,7 @@ function Register() {
                   </button>
                   {step < totalSteps ? (
                     <button 
+                      key="btn-continue"
                       type="button" 
                       onClick={next} 
                       className="rounded-md bg-gradient-gold px-5 py-2.5 text-xs font-bold text-[#141416] shadow-gold uppercase tracking-wider font-display"
@@ -477,6 +639,7 @@ function Register() {
                     </button>
                   ) : (
                     <button 
+                      key="btn-submit"
                       type="submit" 
                       className="inline-flex items-center gap-2 rounded-md bg-gradient-gold px-5 py-2.5 text-xs font-bold text-[#141416] shadow-gold uppercase tracking-wider font-display"
                     >

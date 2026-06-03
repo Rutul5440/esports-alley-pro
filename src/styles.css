@@ -286,3 +286,26 @@ nav[class*="absolute"] {
   border-color: var(--color-primary) !important;
 }
 
+/* ─── Cyberpunk Gold Scrollbar ─── */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01) !important;
+  border-radius: 9px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(0.85 0.16 90 / 0.25) !important; /* Cyber Gold */
+  border-radius: 9px !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.85 0.16 90 / 0.6) !important;
+}
+
+
