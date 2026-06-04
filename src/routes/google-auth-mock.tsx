@@ -25,7 +25,7 @@ function GoogleAuthMock() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
 
-  const handleSelect = (account: typeof preSavedAccounts[0]) => {
+  const handleSelect = (account: (typeof preSavedAccounts)[0]) => {
     if (window.opener) {
       window.opener.postMessage(
         {
@@ -34,18 +34,20 @@ function GoogleAuthMock() {
           fullName: account.fullName,
           avatar: account.avatar,
         },
-        window.location.origin
+        window.location.origin,
       );
       window.close();
     } else {
-      alert("This popup was opened directly. Click on 'Continue with Google' inside the ConqLink app to authenticate properly.");
+      alert(
+        "This popup was opened directly. Click on 'Continue with Google' inside the ConqLink app to authenticate properly.",
+      );
     }
   };
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    
+
     const avatar = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(fullName || email)}`;
     handleSelect({ email, fullName: fullName || email.split("@")[0], avatar });
   };
@@ -58,9 +60,7 @@ function GoogleAuthMock() {
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 shadow-inner">
             <Chrome size={24} className="text-[#4285F4] animate-pulse" />
           </div>
-          <h1 className="mt-4 font-display text-xl font-bold tracking-tight text-white">
-            Google
-          </h1>
+          <h1 className="mt-4 font-display text-xl font-bold tracking-tight text-white">Google</h1>
           <p className="mt-1 text-sm text-zinc-400">
             Sign in to continue to <span className="text-primary font-semibold">ConqLink</span>
           </p>
@@ -73,7 +73,7 @@ function GoogleAuthMock() {
               <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1">
                 Choose an account
               </div>
-              
+
               {preSavedAccounts.map((account) => (
                 <button
                   key={account.email}
@@ -89,11 +89,12 @@ function GoogleAuthMock() {
                     <div className="text-sm font-semibold truncate group-hover:text-primary transition-colors">
                       {account.fullName}
                     </div>
-                    <div className="text-xs text-zinc-400 truncate mt-0.5">
-                      {account.email}
-                    </div>
+                    <div className="text-xs text-zinc-400 truncate mt-0.5">{account.email}</div>
                   </div>
-                  <Mail size={16} className="text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Mail
+                    size={16}
+                    className="text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </button>
               ))}
 
@@ -169,7 +170,8 @@ function GoogleAuthMock() {
 
         {/* Footer info */}
         <div className="mt-8 border-t border-white/5 pt-6 text-center text-xs leading-relaxed text-zinc-500">
-          To continue, Google will share your name, email address, language preference, and profile picture with ConqLink. See ConqLink's Privacy Policy and Terms of Service.
+          To continue, Google will share your name, email address, language preference, and profile
+          picture with ConqLink. See ConqLink's Privacy Policy and Terms of Service.
         </div>
       </div>
     </main>

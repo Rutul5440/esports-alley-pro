@@ -29,11 +29,12 @@ function Clips() {
 
   const clipsQuery = useQuery({
     queryKey: ["clips", game, sort, page],
-    queryFn: () => clipsApi.list({
-      game: game === "all" ? undefined : game,
-      sort,
-      page,
-    }),
+    queryFn: () =>
+      clipsApi.list({
+        game: game === "all" ? undefined : game,
+        sort,
+        page,
+      }),
   });
 
   const likeClip = useMutation({
@@ -55,17 +56,32 @@ function Clips() {
               Browse highlight reels from the community. Filter by game, sort by trending.
             </p>
           </div>
-          <Link to="/upload" className="inline-flex items-center gap-2 rounded-md bg-gradient-gold px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold">
+          <Link
+            to="/upload"
+            className="inline-flex items-center gap-2 rounded-md bg-gradient-gold px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold"
+          >
             <Upload size={16} /> Upload clip
           </Link>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-4">
-          <GameFilterChips value={game} onChange={(g) => { setGame(g); setPage(1); }} />
+          <GameFilterChips
+            value={game}
+            onChange={(g) => {
+              setGame(g);
+              setPage(1);
+            }}
+          />
           <div className="flex gap-2 ml-auto">
             {sortOptions.map(({ id, label, icon: Icon }) => (
-              <button key={id} onClick={() => { setSort(id); setPage(1); }}
-                className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm ${sort === id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}>
+              <button
+                key={id}
+                onClick={() => {
+                  setSort(id);
+                  setPage(1);
+                }}
+                className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm ${sort === id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
+              >
                 <Icon size={14} /> {label}
               </button>
             ))}
@@ -74,13 +90,28 @@ function Clips() {
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {clipsQuery.isLoading ? (
-            <><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
+            <>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
           ) : clips.length ? (
             clips.map((clip: any) => (
-              <article key={clip._id} className="group rounded-lg border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors">
+              <article
+                key={clip._id}
+                className="group rounded-lg border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors"
+              >
                 <div className="relative aspect-video bg-muted">
                   {clip.thumbnailUrl ? (
-                    <img src={clip.thumbnailUrl} alt={clip.title} className="h-full w-full object-cover" loading="lazy" />
+                    <img
+                      src={clip.thumbnailUrl}
+                      alt={clip.title}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <Play size={36} className="text-muted-foreground/40" />
@@ -93,7 +124,8 @@ function Clips() {
                   </div>
                   {clip.duration && (
                     <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white">
-                      {Math.floor(clip.duration / 60)}:{String(Math.floor(clip.duration % 60)).padStart(2, "0")}
+                      {Math.floor(clip.duration / 60)}:
+                      {String(Math.floor(clip.duration % 60)).padStart(2, "0")}
                     </span>
                   )}
                 </div>
@@ -106,28 +138,55 @@ function Clips() {
                   </div>
                   <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center gap-1"><Eye size={13} /> {(clip.views || 0).toLocaleString()}</span>
-                      <button onClick={() => likeClip.mutate(clip._id)} className="inline-flex items-center gap-1 hover:text-primary transition-colors">
+                      <span className="inline-flex items-center gap-1">
+                        <Eye size={13} /> {(clip.views || 0).toLocaleString()}
+                      </span>
+                      <button
+                        onClick={() => likeClip.mutate(clip._id)}
+                        className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                      >
                         <Heart size={13} /> {clip.likes?.length || 0}
                       </button>
                     </div>
-                    <span>{new Date(clip.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                    <span>
+                      {new Date(clip.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
                   </div>
                 </div>
               </article>
             ))
           ) : (
             <div className="col-span-full">
-              <EmptyState title="No clips yet" description="Be the first to upload a highlight clip!" />
+              <EmptyState
+                title="No clips yet"
+                description="Be the first to upload a highlight clip!"
+              />
             </div>
           )}
         </div>
 
         {totalPages > 1 && (
           <div className="mt-8 flex items-center justify-center gap-4">
-            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-30">Previous</button>
-            <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
-            <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-30">Next</button>
+            <button
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-30"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-30"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

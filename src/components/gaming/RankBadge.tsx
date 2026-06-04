@@ -3,13 +3,13 @@ import { Crown, Shield, Trophy, Swords, Award, Star } from "lucide-react";
 import type { Rank } from "@/types";
 
 const config: Record<Rank, { color: string; icon: typeof Crown; label: string }> = {
-  Bronze:    { color: "var(--rank-bronze)",    icon: Shield, label: "Bronze" },
-  Silver:    { color: "var(--rank-silver)",    icon: Shield, label: "Silver" },
-  Gold:      { color: "var(--rank-gold)",      icon: Award,  label: "Gold" },
-  Platinum:  { color: "var(--rank-platinum)",  icon: Star,   label: "Platinum" },
-  Diamond:   { color: "var(--rank-diamond)",   icon: Star,   label: "Diamond" },
-  Crown:     { color: "var(--rank-crown)",     icon: Crown,  label: "Crown" },
-  Ace:       { color: "var(--rank-ace)",       icon: Swords, label: "Ace" },
+  Bronze: { color: "var(--rank-bronze)", icon: Shield, label: "Bronze" },
+  Silver: { color: "var(--rank-silver)", icon: Shield, label: "Silver" },
+  Gold: { color: "var(--rank-gold)", icon: Award, label: "Gold" },
+  Platinum: { color: "var(--rank-platinum)", icon: Star, label: "Platinum" },
+  Diamond: { color: "var(--rank-diamond)", icon: Star, label: "Diamond" },
+  Crown: { color: "var(--rank-crown)", icon: Crown, label: "Crown" },
+  Ace: { color: "var(--rank-ace)", icon: Swords, label: "Ace" },
   Conqueror: { color: "var(--rank-conqueror)", icon: Trophy, label: "Conqueror" },
 };
 
@@ -43,7 +43,8 @@ export function RankBadge({ rank, tier, size = "md", className }: Props) {
       }}
     >
       <Icon size={iconSize} strokeWidth={2.5} />
-      {label}{tier ? ` ${tier}` : ""}
+      {label}
+      {tier ? ` ${tier}` : ""}
     </span>
   );
 }

@@ -1,6 +1,12 @@
 export type Rank =
-  | "Bronze" | "Silver" | "Gold" | "Platinum"
-  | "Diamond" | "Crown" | "Ace" | "Conqueror";
+  | "Bronze"
+  | "Silver"
+  | "Gold"
+  | "Platinum"
+  | "Diamond"
+  | "Crown"
+  | "Ace"
+  | "Conqueror";
 
 export type PlayerRole = "IGL" | "Assaulter" | "Support" | "Sniper" | "Filter" | "Scout";
 export type UserRole = "player" | "organization" | "admin";
@@ -10,7 +16,16 @@ export type CommunityItemType = "watch-party" | "creator-collab" | "team-up";
 export type ScrimKind = "scrim" | "tournament";
 export type ScrimLevel = "Rookie" | "Contender" | "Elite" | "Master" | "Conqueror";
 export type PostType = "general" | "recruitment" | "achievement" | "scrim_announcement" | "clip";
-export type NotificationType = "follow" | "like" | "comment" | "scrim_invite" | "recruitment" | "club_invite" | "achievement" | "scrim_result" | "mention";
+export type NotificationType =
+  | "follow"
+  | "like"
+  | "comment"
+  | "scrim_invite"
+  | "recruitment"
+  | "club_invite"
+  | "achievement"
+  | "scrim_result"
+  | "mention";
 
 export interface User {
   id: string;
@@ -190,7 +205,15 @@ export interface ScrimEvent {
   rules?: string;
   xpReward?: number;
   registrations?: ScrimRegistration[];
-  status: "draft" | "open" | "ongoing" | "completed" | "Open" | "Filling Fast" | "Invite Only" | "Closed";
+  status:
+    | "draft"
+    | "open"
+    | "ongoing"
+    | "completed"
+    | "Open"
+    | "Filling Fast"
+    | "Invite Only"
+    | "Closed";
 }
 
 export interface ScrimRegistration {

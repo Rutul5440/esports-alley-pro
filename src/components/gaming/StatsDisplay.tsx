@@ -3,12 +3,12 @@ import type { PlayerStats } from "@/types";
 import { Target, Trophy, Crosshair, Activity, Zap, Award } from "lucide-react";
 
 const items = [
-  { key: "matches",     label: "Matches",       icon: Activity },
-  { key: "wins",        label: "Wins",          icon: Trophy },
-  { key: "kills",       label: "Kills",         icon: Crosshair },
-  { key: "kd",          label: "K/D",           icon: Target },
-  { key: "avgDamage",   label: "Avg Damage",    icon: Zap },
-  { key: "headshotPct", label: "Headshot %",    icon: Award },
+  { key: "matches", label: "Matches", icon: Activity },
+  { key: "wins", label: "Wins", icon: Trophy },
+  { key: "kills", label: "Kills", icon: Crosshair },
+  { key: "kd", label: "K/D", icon: Target },
+  { key: "avgDamage", label: "Avg Damage", icon: Zap },
+  { key: "headshotPct", label: "Headshot %", icon: Award },
 ] as const;
 
 export function StatsDisplay({ stats, className }: { stats: PlayerStats; className?: string }) {

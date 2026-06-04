@@ -9,9 +9,23 @@ const toneByLabel: Record<string, string> = {
   Conqueror: "border-rose-500/30 bg-rose-500/10 text-rose-300",
 };
 
-export function BadgeChip({ label, icon = true, className }: { label: string; icon?: boolean; className?: string }) {
+export function BadgeChip({
+  label,
+  icon = true,
+  className,
+}: {
+  label: string;
+  icon?: boolean;
+  className?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold", toneByLabel[label] || "border-border bg-accent/30 text-muted-foreground", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold",
+        toneByLabel[label] || "border-border bg-accent/30 text-muted-foreground",
+        className,
+      )}
+    >
       {icon && <Medal size={13} />}
       {label}
     </span>

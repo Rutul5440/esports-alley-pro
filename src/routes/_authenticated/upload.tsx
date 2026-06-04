@@ -26,7 +26,8 @@ function UploadClip() {
   const [error, setError] = useState("");
 
   const onDrop = (e: DragEvent) => {
-    e.preventDefault(); setDrag(false);
+    e.preventDefault();
+    setDrag(false);
     const f = e.dataTransfer.files?.[0];
     if (f && f.type.startsWith("video/")) setFile(f);
   };
@@ -70,12 +71,17 @@ function UploadClip() {
     <AppShell>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <h1 className="text-3xl font-display font-bold">Upload a clip</h1>
-        <p className="text-muted-foreground mt-1">Showcase your best plays. MP4, MOV up to 100MB.</p>
+        <p className="text-muted-foreground mt-1">
+          Showcase your best plays. MP4, MOV up to 100MB.
+        </p>
 
         <form onSubmit={submit} className="mt-8 space-y-6">
           {/* Dropzone */}
           <div
-            onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDrag(true);
+            }}
             onDragLeave={() => setDrag(false)}
             onDrop={onDrop}
             className={`relative border-2 border-dashed rounded-xl p-10 text-center transition-colors ${
@@ -87,9 +93,15 @@ function UploadClip() {
                 <Film className="text-primary" size={24} />
                 <div className="text-left">
                   <div className="font-semibold">{file.name}</div>
-                  <div className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(1)} MB</div>
+                  <div className="text-xs text-muted-foreground">
+                    {(file.size / 1024 / 1024).toFixed(1)} MB
+                  </div>
                 </div>
-                <button type="button" onClick={() => setFile(null)} className="ml-2 p-1 hover:bg-accent/40 rounded">
+                <button
+                  type="button"
+                  onClick={() => setFile(null)}
+                  className="ml-2 p-1 hover:bg-accent/40 rounded"
+                >
                   <X size={16} />
                 </button>
               </div>
@@ -112,7 +124,10 @@ function UploadClip() {
           {uploading && (
             <div className="space-y-2">
               <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div className="h-full bg-gradient-gold transition-all duration-500" style={{ width: `${progress}%` }} />
+                <div
+                  className="h-full bg-gradient-gold transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
               <p className="text-xs text-muted-foreground text-center">Uploading... {progress}%</p>
             </div>
@@ -120,40 +135,76 @@ function UploadClip() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Clip title</span>
-              <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="4K clutch on Erangel"
-                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Clip title
+              </span>
+              <input
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="4K clutch on Erangel"
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Game</span>
-              <select value={game} onChange={(e) => setGame(e.target.value as GameId)}
-                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30">
-                {games.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Game
+              </span>
+              <select
+                value={game}
+                onChange={(e) => setGame(e.target.value as GameId)}
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                {games.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
 
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Description (optional)</span>
-            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3}
-              className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Description (optional)
+            </span>
+            <textarea
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              rows={3}
+              className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            />
           </label>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1"><Tag size={12} /> Tags (comma separated)</span>
-              <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="clutch, snipe, ranked"
-                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                <Tag size={12} /> Tags (comma separated)
+              </span>
+              <input
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="clutch, snipe, ranked"
+                className="mt-1.5 w-full px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thumbnail (optional)</span>
-              <input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
-                className="mt-1.5 w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Thumbnail (optional)
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
+                className="mt-1.5 w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20"
+              />
             </label>
           </div>
 
           {error && (
-            <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</div>
+            <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {error}
+            </div>
           )}
 
           <button

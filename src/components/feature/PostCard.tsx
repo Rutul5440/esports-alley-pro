@@ -1,4 +1,18 @@
-import { BadgeCheck, Bookmark, Heart, MessageCircle, Repeat2, Send, Loader2, ChevronDown, Trash2, MoreVertical, Edit, X, Check } from "lucide-react";
+import {
+  BadgeCheck,
+  Bookmark,
+  Heart,
+  MessageCircle,
+  Repeat2,
+  Send,
+  Loader2,
+  ChevronDown,
+  Trash2,
+  MoreVertical,
+  Edit,
+  X,
+  Check,
+} from "lucide-react";
 import type { CommentItem, FeedPost } from "@/types";
 import { gameName } from "@/lib/mock-data";
 import { useState } from "react";
@@ -7,7 +21,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postsApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; onLike?: () => void; onSave?: () => void; onShare?: () => void }) {
+export function PostCard({
+  post,
+  onLike,
+  onSave,
+  onShare,
+}: {
+  post: FeedPost;
+  onLike?: () => void;
+  onSave?: () => void;
+  onShare?: () => void;
+}) {
   const game = post.gameTag || post.game;
   const body = post.content || post.body;
   const media = post.mediaUrls?.[0] || post.image;
@@ -15,7 +39,7 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
   const queryClient = useQueryClient();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
-  
+
   // Post Edit and Menu States
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(body || "");
@@ -71,11 +95,20 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
     <article className="rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-elevated/30 relative">
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <img src={post.authorAvatar || `https://api.dicebear.com/9.x/initials/svg?seed=${post.authorName}`} alt="" className="h-11 w-11 rounded-full border border-border object-cover" />
+          <img
+            src={
+              post.authorAvatar ||
+              `https://api.dicebear.com/9.x/initials/svg?seed=${post.authorName}`
+            }
+            alt=""
+            className="h-11 w-11 rounded-full border border-border object-cover"
+          />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="font-semibold">{post.authorName}</span>
-              {post.authorType === "organization" && <BadgeCheck size={15} className="text-primary" />}
+              {post.authorType === "organization" && (
+                <BadgeCheck size={15} className="text-primary" />
+              )}
               <span className="rounded-md border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
                 {gameName(game)}
               </span>
@@ -85,7 +118,9 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">@{post.authorHandle} · {post.authorMeta} · {formatDate(post.createdAt)}</p>
+            <p className="text-xs text-muted-foreground">
+              @{post.authorHandle} · {post.authorMeta} · {formatDate(post.createdAt)}
+            </p>
           </div>
 
           {/* Top-Right Three Dot Menu */}
@@ -98,14 +133,17 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
               >
                 <MoreVertical size={16} />
               </button>
-              
+
               {showMenu && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                   <div className="absolute right-0 top-8 z-20 w-36 rounded-md border border-border bg-card p-1 shadow-elevated">
                     <button
                       type="button"
-                      onClick={() => { setIsEditing(true); setShowMenu(false); }}
+                      onClick={() => {
+                        setIsEditing(true);
+                        setShowMenu(false);
+                      }}
                       className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-xs font-semibold hover:bg-accent/40 text-foreground cursor-pointer transition-colors"
                     >
                       <Edit size={13} className="text-primary" /> Edit Post
@@ -141,7 +179,10 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
             <div className="flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => { setIsEditing(false); setEditContent(body || ""); }}
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditContent(body || "");
+                }}
                 className="rounded-md border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent/30 cursor-pointer transition-colors"
               >
                 Cancel
@@ -157,14 +198,19 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
             </div>
           </div>
         ) : (
-          body && <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-foreground/90">{body}</p>
+          body && (
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-foreground/90">{body}</p>
+          )
         )}
 
         {/* Tags */}
         {!!post.tags?.length && (
           <div className="mt-3 flex flex-wrap gap-2">
             {post.tags.map((tag) => (
-              <span key={tag} className="rounded-md bg-accent/30 px-2 py-1 text-xs text-muted-foreground">
+              <span
+                key={tag}
+                className="rounded-md bg-accent/30 px-2 py-1 text-xs text-muted-foreground"
+              >
                 #{tag}
               </span>
             ))}
@@ -177,13 +223,24 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
             <p className="font-semibold text-sm mb-3">{post.poll.question}</p>
             <div className="space-y-2">
               {post.poll.options.map((opt, idx) => {
-                const pct = post.poll!.totalVotes > 0 ? Math.round((opt.votes / post.poll!.totalVotes) * 100) : 0;
+                const pct =
+                  post.poll!.totalVotes > 0
+                    ? Math.round((opt.votes / post.poll!.totalVotes) * 100)
+                    : 0;
                 const isMyVote = post.poll!.myVote === idx;
                 return (
-                  <div key={idx} className="relative overflow-hidden rounded-md border border-border p-2.5 text-sm">
-                    <div className={`absolute inset-y-0 left-0 ${isMyVote ? "bg-primary/15" : "bg-accent/30"}`} style={{ width: `${pct}%` }} />
+                  <div
+                    key={idx}
+                    className="relative overflow-hidden rounded-md border border-border p-2.5 text-sm"
+                  >
+                    <div
+                      className={`absolute inset-y-0 left-0 ${isMyVote ? "bg-primary/15" : "bg-accent/30"}`}
+                      style={{ width: `${pct}%` }}
+                    />
                     <div className="relative flex items-center justify-between">
-                      <span className={isMyVote ? "font-semibold text-primary" : ""}>{opt.text}</span>
+                      <span className={isMyVote ? "font-semibold text-primary" : ""}>
+                        {opt.text}
+                      </span>
                       <span className="text-xs text-muted-foreground">{pct}%</span>
                     </div>
                   </div>
@@ -195,13 +252,29 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
         )}
       </div>
 
-      {media && <img src={media} alt="" className="aspect-[16/7] w-full object-cover" loading="lazy" />}
+      {media && (
+        <img src={media} alt="" className="aspect-[16/7] w-full object-cover" loading="lazy" />
+      )}
 
       <div className="grid grid-cols-5 border-t border-border px-2 py-1 text-sm text-muted-foreground">
-        <Action icon={Heart} label={String(post.likes || 0)} active={post.likedByMe} onClick={onLike} />
-        <Action icon={MessageCircle} label={String(post.comments || 0)} onClick={() => setShowComments(!showComments)} />
+        <Action
+          icon={Heart}
+          label={String(post.likes || 0)}
+          active={post.likedByMe}
+          onClick={onLike}
+        />
+        <Action
+          icon={MessageCircle}
+          label={String(post.comments || 0)}
+          onClick={() => setShowComments(!showComments)}
+        />
         <Action icon={Repeat2} label={String(post.shares ?? post.reposts ?? 0)} onClick={onShare} />
-        <Action icon={Bookmark} label={post.savedByMe ? "Saved" : "Save"} active={post.savedByMe} onClick={onSave} />
+        <Action
+          icon={Bookmark}
+          label={post.savedByMe ? "Saved" : "Save"}
+          active={post.savedByMe}
+          onClick={onSave}
+        />
         <Action icon={Send} label="Share" onClick={onShare} />
       </div>
 
@@ -219,7 +292,9 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
               <input
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && commentText.trim()) addComment.mutate(); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && commentText.trim()) addComment.mutate();
+                }}
                 placeholder="Write a comment…"
                 className="flex-1 rounded-md border border-border bg-input px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
@@ -238,11 +313,15 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
           {comments.length > 0 && (
             <div className="mt-4 space-y-3">
               {comments.slice(0, 5).map((c) => {
-                const hasLiked = c.likes?.some((id) => String(id) === String(user?.id || user?._id)) || false;
+                const hasLiked =
+                  c.likes?.some((id) => String(id) === String(user?.id || user?._id)) || false;
                 return (
                   <div key={c._id} className="flex items-start gap-2 group">
                     <img
-                      src={c.user?.avatar || `https://api.dicebear.com/9.x/initials/svg?seed=${c.user?.username || "u"}`}
+                      src={
+                        c.user?.avatar ||
+                        `https://api.dicebear.com/9.x/initials/svg?seed=${c.user?.username || "u"}`
+                      }
                       alt=""
                       className="h-7 w-7 rounded-full border border-border object-cover"
                     />
@@ -251,7 +330,9 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
                         <span className="text-sm font-semibold text-foreground">
                           {c.user?.username ? `@${c.user.username}` : "@gamer"}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">{formatDate(c.createdAt)}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatDate(c.createdAt)}
+                        </span>
                       </div>
                       <p className="text-sm text-foreground/90 mt-0.5">{c.text}</p>
                     </div>
@@ -266,15 +347,25 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
                           "rounded p-1 transition-all duration-200 flex items-center gap-1 cursor-pointer",
                           hasLiked
                             ? "text-primary bg-primary/5 scale-105"
-                            : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
+                            : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                         )}
                       >
-                        <Heart size={12} fill={hasLiked ? "currentColor" : "none"} className={hasLiked ? "scale-105" : ""} />
-                        {c.likes?.length > 0 && <span className="text-[10px] font-mono leading-none">{c.likes.length}</span>}
+                        <Heart
+                          size={12}
+                          fill={hasLiked ? "currentColor" : "none"}
+                          className={hasLiked ? "scale-105" : ""}
+                        />
+                        {c.likes?.length > 0 && (
+                          <span className="text-[10px] font-mono leading-none">
+                            {c.likes.length}
+                          </span>
+                        )}
                       </button>
 
                       {/* Trash Delete Option */}
-                      {(c.user?._id === user?.id || post.authorId === user?.id || user?.role === "admin") && (
+                      {(c.user?._id === user?.id ||
+                        post.authorId === user?.id ||
+                        user?.role === "admin") && (
                         <button
                           onClick={() => deleteComment.mutate(c._id)}
                           className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive cursor-pointer transition-colors"
@@ -299,10 +390,44 @@ export function PostCard({ post, onLike, onSave, onShare }: { post: FeedPost; on
   );
 }
 
-function Action({ icon: Icon, label, active, onClick }: { icon: typeof Heart; label: string; active?: boolean; onClick?: () => void }) {
+function Action({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: typeof Heart;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const isHeart = Icon === Heart;
+  const isBookmark = Icon === Bookmark;
+
+  let activeClass = "text-primary";
+  if (active) {
+    if (isHeart) {
+      activeClass = "text-rose-500 hover:text-rose-600";
+    } else if (isBookmark) {
+      activeClass = "text-amber-500 hover:text-amber-600";
+    }
+  }
+
   return (
-    <button type="button" onClick={onClick} className={`inline-flex items-center justify-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-accent/30 hover:text-foreground cursor-pointer ${active ? "text-primary" : ""}`}>
-      <Icon size={16} /> <span className="truncate">{label}</span>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-accent/30 hover:text-foreground cursor-pointer",
+        active ? activeClass : "",
+      )}
+    >
+      <Icon
+        size={16}
+        fill={active ? "currentColor" : "none"}
+        className="transition-transform active:scale-125 duration-200"
+      />
+      <span className="truncate">{label}</span>
     </button>
   );
 }

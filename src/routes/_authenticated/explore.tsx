@@ -26,7 +26,14 @@ function Explore() {
 
   const searchQuery = useQuery({
     queryKey: ["explore", { rank, role, game, page }],
-    queryFn: () => profileApi.search({ rank: rank || undefined, role: role || undefined, game: game || undefined, page, limit: 12 }),
+    queryFn: () =>
+      profileApi.search({
+        rank: rank || undefined,
+        role: role || undefined,
+        game: game || undefined,
+        page,
+        limit: 12,
+      }),
   });
 
   const apiPlayers = searchQuery.data?.players || [];
@@ -49,7 +56,8 @@ function Explore() {
     id: p._id || p.id,
     username: p.user?.username || p.username,
     displayName: p.displayName || p.user?.username || p.username || "Player",
-    avatar: p.user?.avatar || p.avatar || `https://api.dicebear.com/9.x/initials/svg?seed=${p.username}`,
+    avatar:
+      p.user?.avatar || p.avatar || `https://api.dicebear.com/9.x/initials/svg?seed=${p.username}`,
     banner: p.bannerImage || p.banner || "",
     bio: p.bio || "",
     location: p.country || p.location || "",
@@ -78,7 +86,10 @@ function Explore() {
 
         <div className="mt-6 bg-gradient-surface border border-border rounded-xl p-4 flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -86,36 +97,87 @@ function Explore() {
               className="w-full pl-9 pr-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
-          <select value={game} onChange={(e) => { setGame(e.target.value as GameId | ""); setPage(1); }} className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30">
+          <select
+            value={game}
+            onChange={(e) => {
+              setGame(e.target.value as GameId | "");
+              setPage(1);
+            }}
+            className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
             <option value="">All games</option>
-            {games.map((g) => <option key={g.id} value={g.id}>{g.shortName}</option>)}
+            {games.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.shortName}
+              </option>
+            ))}
           </select>
-          <select value={rank} onChange={(e) => { setRank(e.target.value as Rank | ""); setPage(1); }} className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30">
+          <select
+            value={rank}
+            onChange={(e) => {
+              setRank(e.target.value as Rank | "");
+              setPage(1);
+            }}
+            className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
             <option value="">All ranks</option>
-            {RANKS.map((r) => <option key={r} value={r}>{r}</option>)}
+            {RANKS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </select>
-          <select value={role} onChange={(e) => { setRole(e.target.value as PlayerRole | ""); setPage(1); }} className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30">
+          <select
+            value={role}
+            onChange={(e) => {
+              setRole(e.target.value as PlayerRole | "");
+              setPage(1);
+            }}
+            className="px-3 py-2.5 rounded-md bg-input border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
             <option value="">All roles</option>
-            {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+            {ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="mt-6 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {searchQuery.isLoading ? <Loader2 size={14} className="inline animate-spin mr-1" /> : null}
+            {searchQuery.isLoading ? (
+              <Loader2 size={14} className="inline animate-spin mr-1" />
+            ) : null}
             {filtered.length} player{filtered.length === 1 ? "" : "s"} found
           </p>
           {pages > 1 && (
             <div className="flex gap-2">
-              <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border border-border px-3 py-1 text-sm disabled:opacity-30">Prev</button>
-              <span className="text-sm text-muted-foreground py-1">{page}/{pages}</span>
-              <button disabled={page >= pages} onClick={() => setPage((p) => p + 1)} className="rounded-md border border-border px-3 py-1 text-sm disabled:opacity-30">Next</button>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded-md border border-border px-3 py-1 text-sm disabled:opacity-30"
+              >
+                Prev
+              </button>
+              <span className="text-sm text-muted-foreground py-1">
+                {page}/{pages}
+              </span>
+              <button
+                disabled={page >= pages}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded-md border border-border px-3 py-1 text-sm disabled:opacity-30"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>
 
         <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((p: any) => <ProfileCard key={p._id || p.id} player={normalizePlayer(p)} />)}
+          {filtered.map((p: any) => (
+            <ProfileCard key={p._id || p.id} player={normalizePlayer(p)} />
+          ))}
         </div>
 
         {filtered.length === 0 && !searchQuery.isLoading && (

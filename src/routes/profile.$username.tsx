@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,9 +9,27 @@ import { RankBadge } from "@/components/gaming/RankBadge";
 import { StatsDisplay } from "@/components/gaming/StatsDisplay";
 import { VideoPlayer } from "@/components/gaming/VideoPlayer";
 import { PostCard } from "@/components/feature/PostCard";
-import { BadgeCheck, MapPin, Users, Award, MessageSquare, UserPlus, Gamepad2, Medal, BriefcaseBusiness, Settings, UserMinus, Loader2 } from "lucide-react";
+import {
+  BadgeCheck,
+  MapPin,
+  Users,
+  Award,
+  MessageSquare,
+  UserPlus,
+  Gamepad2,
+  Medal,
+  BriefcaseBusiness,
+  Settings,
+  UserMinus,
+  Loader2,
+} from "lucide-react";
+
+const profileSearchSchema = z.object({
+  tab: z.string().optional(),
+});
 
 export const Route = createFileRoute("/profile/$username")({
+  validateSearch: (search) => profileSearchSchema.parse(search),
   head: ({ params }) => ({
     meta: [
       { title: `${params.username} — ConqLink` },
@@ -25,16 +44,39 @@ import { cn } from "@/lib/utils";
 function Profile() {
   const { username } = Route.useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { tab } = Route.useSearch();
   const queryClient = useQueryClient();
   const isOwnProfile = user?.username === username;
-  const profileQuery = useQuery({ queryKey: ["profile", username], queryFn: () => profileApi.get(username), retry: false });
+
+  const likeMutation = useMutation({
+    mutationFn: (postId: string) => postsApi.like(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userPosts", username] });
+      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: (postId: string) => postsApi.save(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userPosts", username] });
+      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
+    },
+  });
+  const profileQuery = useQuery({
+    queryKey: ["profile", username],
+    queryFn: () => profileApi.get(username),
+    retry: false,
+  });
   const apiProfile = profileQuery.data;
   const player = normalizePlayer(apiProfile) || getPlayerByUsername(username);
 
-  const isFollowing = apiProfile?.user?.followers?.some((f: any) => {
-    const fId = typeof f === "object" ? (f._id || f.id) : f;
-    return String(fId) === String(user?.id || user?._id);
-  }) || false;
+  const isFollowing =
+    apiProfile?.user?.followers?.some((f: any) => {
+      const fId = typeof f === "object" ? f._id || f.id : f;
+      return String(fId) === String(user?.id || user?._id);
+    }) || false;
 
   const postsQuery = useQuery({
     queryKey: ["userPosts", username],
@@ -69,35 +111,53 @@ function Profile() {
     staleTime: Infinity,
   });
 
-  if (apiProfile?.type === "organization" || (!player && user?.username === username && user.role === "organization")) {
-      const org = apiProfile?.organization || mockOrganizations[0];
-      return (
-        <AppShell>
-          <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-            <section className="rounded-lg border border-border bg-gradient-surface p-6 shadow-elevated">
-              <div className="flex flex-col gap-5 md:flex-row md:items-center">
-                <img src={org.logo} alt="" className="h-24 w-24 rounded-lg border border-border bg-card object-cover" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h1 className="font-display text-3xl font-bold">{org.name || user?.username}</h1>
-                    <BadgeCheck className="text-primary" size={22} />
-                  </div>
-                  <p className="mt-1 text-muted-foreground">Organization profile · Scouting and scrim operations</p>
-                  <p className="mt-4 max-w-2xl text-sm leading-6">{org.description}</p>
+  if (
+    apiProfile?.type === "organization" ||
+    (!player && user?.username === username && user.role === "organization")
+  ) {
+    const org = apiProfile?.organization || mockOrganizations[0];
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+          <section className="rounded-lg border border-border bg-gradient-surface p-6 shadow-elevated">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center">
+              <img
+                src={org.logo}
+                alt=""
+                className="h-24 w-24 rounded-lg border border-border bg-card object-cover"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-display text-3xl font-bold">{org.name || user?.username}</h1>
+                  <BadgeCheck className="text-primary" size={22} />
                 </div>
-                <Link to="/scouting" className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-gold px-4 py-2 font-semibold text-primary-foreground shadow-gold">
-                  <BriefcaseBusiness size={16} /> Open scouting
-                </Link>
+                <p className="mt-1 text-muted-foreground">
+                  Organization profile · Scouting and scrim operations
+                </p>
+                <p className="mt-4 max-w-2xl text-sm leading-6">{org.description}</p>
               </div>
-              <div className="mt-6 grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
-                <MiniMetric label="Followers" value={(org.followers || org.followersCount || 0).toLocaleString()} />
-                <MiniMetric label="Active games" value={(org.activeGames || []).map(gameName).join(", ")} />
-                <MiniMetric label="Open roles" value={(org.openRoles || []).join(", ")} />
-              </div>
-            </section>
-          </div>
-        </AppShell>
-      );
+              <Link
+                to="/scouting"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-gold px-4 py-2 font-semibold text-primary-foreground shadow-gold"
+              >
+                <BriefcaseBusiness size={16} /> Open scouting
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
+              <MiniMetric
+                label="Followers"
+                value={(org.followers || org.followersCount || 0).toLocaleString()}
+              />
+              <MiniMetric
+                label="Active games"
+                value={(org.activeGames || []).map(gameName).join(", ")}
+              />
+              <MiniMetric label="Open roles" value={(org.openRoles || []).join(", ")} />
+            </div>
+          </section>
+        </div>
+      </AppShell>
+    );
   }
 
   if (profileQuery.isLoading) {
@@ -117,7 +177,9 @@ function Profile() {
         <div className="max-w-3xl mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-display font-bold">Player not found</h1>
           <p className="text-muted-foreground mt-2">No profile for @{username}.</p>
-          <Link to="/explore" className="mt-6 inline-block text-primary hover:underline">Explore players</Link>
+          <Link to="/explore" className="mt-6 inline-block text-primary hover:underline">
+            Explore players
+          </Link>
         </div>
       </AppShell>
     );
@@ -148,24 +210,38 @@ function Profile() {
               <p className="text-muted-foreground">@{player.username}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
                 <RankBadge rank={player.rank} tier={player.tier} />
-                {player.location && <span className="inline-flex items-center gap-1 text-muted-foreground"><MapPin size={14} />{player.location}</span>}
-                <span className="inline-flex items-center gap-1 text-muted-foreground"><Users size={14} />{player.followers.toLocaleString()} followers</span>
+                {player.location && (
+                  <span className="inline-flex items-center gap-1 text-muted-foreground">
+                    <MapPin size={14} />
+                    {player.location}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 text-muted-foreground">
+                  <Users size={14} />
+                  {player.followers.toLocaleString()} followers
+                </span>
               </div>
             </div>
             <div className="flex gap-2">
               {isOwnProfile ? (
-                <Link to="/settings" className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:border-primary/50 transition-colors">
+                <Link
+                  to="/settings"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:border-primary/50 transition-colors"
+                >
                   <Settings size={16} /> Edit Profile
                 </Link>
               ) : (
                 <>
-                  <button onClick={() => followMutation.mutate()} disabled={followMutation.isPending}
+                  <button
+                    onClick={() => followMutation.mutate()}
+                    disabled={followMutation.isPending}
                     className={cn(
                       "inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all duration-200 cursor-pointer",
                       isFollowing
                         ? "bg-secondary text-secondary-foreground border border-border hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-500"
-                        : "bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90"
-                    )}>
+                        : "bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90",
+                    )}
+                  >
                     {followMutation.isPending ? (
                       <Loader2 size={16} className="animate-spin" />
                     ) : isFollowing ? (
@@ -187,15 +263,25 @@ function Profile() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {player.roles.map((r: string) => (
-              <span key={r} className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-accent/40 border border-border">{r}</span>
+              <span
+                key={r}
+                className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-accent/40 border border-border"
+              >
+                {r}
+              </span>
             ))}
             {player.preferredGames.map((game: string) => (
-              <span key={game} className="inline-flex items-center gap-1 text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30">
+              <span
+                key={game}
+                className="inline-flex items-center gap-1 text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30"
+              >
                 <Gamepad2 size={12} /> {gameName(game)}
               </span>
             ))}
             {player.team && (
-              <span className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30">{player.team}</span>
+              <span className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30">
+                {player.team}
+              </span>
             )}
           </div>
         </div>
@@ -209,12 +295,18 @@ function Profile() {
           <div className="grid gap-3 sm:grid-cols-3">
             <MiniMetric label="Skill score" value={`${player.skillScore}/100`} />
             <MiniMetric label="Profile views" value={player.profileViews.toLocaleString()} />
-            <MiniMetric label="Team status" value={player.isOpenToTeam ? "Open to team" : "Signed"} />
+            <MiniMetric
+              label="Team status"
+              value={player.isOpenToTeam ? "Open to team" : "Signed"}
+            />
           </div>
           {player.badges.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {player.badges.map((badge: string) => (
-                <span key={badge} className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary">
+                <span
+                  key={badge}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"
+                >
                   <Medal size={15} /> {badge} Scrim
                 </span>
               ))}
@@ -227,13 +319,18 @@ function Profile() {
           <Section title="Achievements">
             <div className="grid sm:grid-cols-2 gap-3">
               {player.achievements.map((a: any) => (
-                <div key={a.id || a._id} className="bg-gradient-surface border border-border rounded-lg p-4 flex items-center gap-3">
+                <div
+                  key={a.id || a._id}
+                  className="bg-gradient-surface border border-border rounded-lg p-4 flex items-center gap-3"
+                >
                   <div className="w-10 h-10 rounded-md bg-primary/10 text-primary flex items-center justify-center">
                     <Award size={18} />
                   </div>
                   <div>
                     <div className="font-semibold">{a.title}</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">{a.tier || a.badge} • {new Date(a.earnedAt).toLocaleDateString()}</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                      {a.tier || a.badge} • {new Date(a.earnedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -245,21 +342,68 @@ function Profile() {
         {player.clips.length > 0 && (
           <Section title="Highlight Clips">
             <div className="grid sm:grid-cols-2 gap-5">
-              {player.clips.map((c: any) => <VideoPlayer key={c.id || c._id} clip={c} />)}
-            </div>
-          </Section>
-        )}
-
-        {/* User Posts */}
-        {userPosts.length > 0 && (
-          <Section title="Recent Posts">
-            <div className="space-y-4">
-              {userPosts.slice(0, 5).map((post: any) => (
-                <PostCard key={post.id || post._id} post={post} />
+              {player.clips.map((c: any) => (
+                <VideoPlayer key={c.id || c._id} clip={c} />
               ))}
             </div>
           </Section>
         )}
+
+        {/* User Content Tabs */}
+        <div className="mt-8 border-b border-border">
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate({ search: { tab: undefined } })}
+              className={cn(
+                "pb-3 text-sm font-semibold border-b-2 px-1 transition-all cursor-pointer",
+                !tab || tab === "posts"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Recent Posts
+            </button>
+            {isOwnProfile && (
+              <button
+                onClick={() => navigate({ search: { tab: "saved" } })}
+                className={cn(
+                  "pb-3 text-sm font-semibold border-b-2 px-1 transition-all cursor-pointer",
+                  tab === "saved"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Saved Posts
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Tab Contents */}
+        <div className="mt-6">
+          {(!tab || tab === "posts") && (
+            <div className="space-y-4">
+              {userPosts.length > 0 ? (
+                userPosts.map((post: any) => (
+                  <PostCard
+                    key={post.id || post._id}
+                    post={post}
+                    onLike={() => likeMutation.mutate(post.id || post._id)}
+                    onSave={() => saveMutation.mutate(post.id || post._id)}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  No posts uploaded yet.
+                </p>
+              )}
+            </div>
+          )}
+
+          {tab === "saved" && isOwnProfile && (
+            <SavedPostsList likeMutation={likeMutation} saveMutation={saveMutation} />
+          )}
+        </div>
 
         <div className="h-16" />
       </div>
@@ -318,6 +462,38 @@ function MiniMetric({ label, value }: { label: string; value: string }) {
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-lg font-bold">{value}</div>
+    </div>
+  );
+}
+
+function SavedPostsList({ likeMutation, saveMutation }: { likeMutation: any; saveMutation: any }) {
+  const savedQuery = useQuery({
+    queryKey: ["savedPosts"],
+    queryFn: () => postsApi.getSaved(),
+  });
+
+  const savedPosts = savedQuery.data?.posts || [];
+
+  if (savedQuery.isLoading) {
+    return (
+      <div className="text-sm text-muted-foreground py-6 text-center">Loading saved posts...</div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {savedPosts.length > 0 ? (
+        savedPosts.map((post: any) => (
+          <PostCard
+            key={post.id || post._id}
+            post={post}
+            onLike={() => likeMutation.mutate(post.id || post._id)}
+            onSave={() => saveMutation.mutate(post.id || post._id)}
+          />
+        ))
+      ) : (
+        <p className="text-sm text-muted-foreground py-6 text-center">No saved posts yet.</p>
+      )}
     </div>
   );
 }

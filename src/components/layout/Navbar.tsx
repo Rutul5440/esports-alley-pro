@@ -18,8 +18,16 @@ import {
   User,
   Users,
   X,
+  Bookmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const playerNavItems = [
   { to: "/dashboard", label: "Feed", icon: LayoutDashboard },
@@ -87,11 +95,16 @@ export function Navbar() {
                 const active = location.pathname.startsWith(item.to);
                 const Icon = item.icon;
                 return (
-                  <Link key={item.to} to={item.to}
+                  <Link
+                    key={item.to}
+                    to={item.to}
                     className={cn(
                       "inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
-                    )}>
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+                    )}
+                  >
                     <Icon size={16} /> {item.label}
                   </Link>
                 );
@@ -104,11 +117,17 @@ export function Navbar() {
             {isAuthenticated && (
               <div ref={searchRef} className="relative hidden sm:block">
                 <div className="relative">
-                  <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Search
+                    size={14}
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
                   <input
                     value={searchQuery}
                     onFocus={() => setSearchOpen(true)}
-                    onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setSearchOpen(true);
+                    }}
                     placeholder="Search matrix..."
                     className="w-44 rounded-md border border-white/10 bg-input/60 py-1.5 pl-8 pr-3 text-sm placeholder:text-muted-foreground/50 focus:w-64 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30 hover:border-white/20 transition-all shadow-inner"
                   />
@@ -120,19 +139,28 @@ export function Navbar() {
                     ) : (
                       <>
                         {searchResults.data?.users?.map((u: any) => (
-                          <Link key={u._id} to="/profile/$username" params={{ username: u.username }} onClick={() => setSearchOpen(false)}
-                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent/30">
+                          <Link
+                            key={u._id}
+                            to="/profile/$username"
+                            params={{ username: u.username }}
+                            onClick={() => setSearchOpen(false)}
+                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent/30"
+                          >
                             <User size={14} /> {u.username}
                           </Link>
                         ))}
                         {searchResults.data?.clips?.map((c: any) => (
-                          <div key={c._id} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground">
+                          <div
+                            key={c._id}
+                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground"
+                          >
                             <Film size={14} /> {c.title}
                           </div>
                         ))}
-                        {!searchResults.data?.users?.length && !searchResults.data?.clips?.length && (
-                          <p className="text-sm text-muted-foreground">No results found</p>
-                        )}
+                        {!searchResults.data?.users?.length &&
+                          !searchResults.data?.clips?.length && (
+                            <p className="text-sm text-muted-foreground">No results found</p>
+                          )}
                       </>
                     )}
                   </div>
@@ -143,7 +171,10 @@ export function Navbar() {
             {isAuthenticated ? (
               <>
                 {/* Notification Bell */}
-                <Link to="/notifications" className="relative inline-flex items-center rounded-md p-2 text-muted-foreground hover:bg-accent/40 hover:text-foreground">
+                <Link
+                  to="/notifications"
+                  className="relative inline-flex items-center rounded-md p-2 text-muted-foreground hover:bg-accent/40 hover:text-foreground"
+                >
                   <Bell size={18} />
                   {unreadCount > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground animate-pulse">
@@ -153,28 +184,80 @@ export function Navbar() {
                 </Link>
 
                 <span className="hidden items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground lg:inline-flex">
-                  <BadgeCheck size={13} className="text-primary" /> {user!.role === "organization" ? "Org" : "Player"}
+                  <BadgeCheck size={13} className="text-primary" />{" "}
+                  {user!.role === "organization" ? "Org" : "Player"}
                 </span>
-                <Link to="/profile/$username" params={{ username: user!.username }}
-                  className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent/40">
-                  <User size={16} /> <span className="hidden sm:inline">{user!.username}</span>
-                </Link>
-                <Link to="/settings" className="hidden rounded-md p-2 text-muted-foreground hover:bg-accent/40 hover:text-foreground sm:inline-flex">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent/40 focus:outline-none cursor-pointer">
+                      <User size={16} /> <span className="hidden sm:inline">{user!.username}</span>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-48 !bg-[#0c0c0e] border border-border !opacity-100"
+                    style={{ backgroundColor: "#0c0c0e", opacity: 1 }}
+                  >
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile/$username" params={{ username: user!.username }}>
+                        <User size={14} className="mr-2" /> My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/profile/$username"
+                        params={{ username: user!.username }}
+                        search={{ tab: "saved" }}
+                      >
+                        <Bookmark size={14} className="mr-2" /> Saved Posts
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/settings">
+                        <Settings size={14} className="mr-2" /> Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-border" />
+                    <DropdownMenuItem
+                      onClick={() => {
+                        logout();
+                        navigate({ to: "/" });
+                      }}
+                      className="text-red-500 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                    >
+                      <LogOut size={14} className="mr-2" /> Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link
+                  to="/settings"
+                  className="hidden rounded-md p-2 text-muted-foreground hover:bg-accent/40 hover:text-foreground sm:inline-flex"
+                >
                   <Settings size={16} />
                 </Link>
-                <button onClick={() => { logout(); navigate({ to: "/" }); }}
-                  className="inline-flex items-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground" aria-label="Log out">
-                  <LogOut size={16} />
-                </button>
+
                 {/* Mobile menu toggle */}
-                <button onClick={() => setMobileOpen(!mobileOpen)} className="inline-flex rounded-md p-2 text-muted-foreground hover:bg-accent/40 md:hidden">
+                <button
+                  onClick={() => setMobileOpen(!mobileOpen)}
+                  className="inline-flex rounded-md p-2 text-muted-foreground hover:bg-accent/40 md:hidden"
+                >
                   {mobileOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-300 hover:text-foreground hover:bg-white/5">Log in</Link>
-                <Link to="/register" className="rounded-md bg-gradient-gold px-5 py-1.5 text-sm font-semibold text-primary-foreground shadow-gold hover:shadow-[0_0_20px_oklch(0.85_0.16_90_/_0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">Join</Link>
+                <Link
+                  to="/login"
+                  className="rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-300 hover:text-foreground hover:bg-white/5"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-md bg-gradient-gold px-5 py-1.5 text-sm font-semibold text-primary-foreground shadow-gold hover:shadow-[0_0_20px_oklch(0.85_0.16_90_/_0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                >
+                  Join
+                </Link>
               </>
             )}
           </div>
@@ -188,25 +271,48 @@ export function Navbar() {
           <nav className="absolute right-0 top-0 h-full w-72 border-l border-border bg-card p-6 space-y-1">
             <div className="flex items-center justify-between mb-6">
               <span className="font-display text-lg font-bold">Menu</span>
-              <button onClick={() => setMobileOpen(false)}><X size={20} /></button>
+              <button onClick={() => setMobileOpen(false)}>
+                <X size={20} />
+              </button>
             </div>
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
-                <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40">
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40"
+                >
                   <Icon size={18} /> {item.label}
                 </Link>
               );
             })}
             <hr className="border-border my-3" />
-            <Link to="/notifications" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40">
-              <Bell size={18} /> Notifications {unreadCount > 0 && <span className="ml-auto rounded-full bg-destructive px-1.5 text-[10px] text-destructive-foreground">{unreadCount}</span>}
+            <Link
+              to="/notifications"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40"
+            >
+              <Bell size={18} /> Notifications{" "}
+              {unreadCount > 0 && (
+                <span className="ml-auto rounded-full bg-destructive px-1.5 text-[10px] text-destructive-foreground">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
-            <Link to="/settings" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40">
+            <Link
+              to="/settings"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40"
+            >
               <Settings size={18} /> Settings
             </Link>
-            <Link to="/upload" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40">
+            <Link
+              to="/upload"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium hover:bg-accent/40"
+            >
               <Film size={18} /> Upload clip
             </Link>
           </nav>

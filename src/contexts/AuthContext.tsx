@@ -7,8 +7,19 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string, role: UserRole, extras?: Record<string, string>) => Promise<void>;
-  googleLogin: (email: string, username?: string, fullName?: string, avatar?: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    extras?: Record<string, string>,
+  ) => Promise<void>;
+  googleLogin: (
+    email: string,
+    username?: string,
+    fullName?: string,
+    avatar?: string,
+  ) => Promise<void>;
   completeProfile: (payload: Record<string, unknown>) => Promise<void>;
   logout: () => void;
 }
@@ -53,12 +64,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persistAuthPayload(payload as AuthApiPayload);
   };
 
-  const register = async (username: string, email: string, password: string, role: UserRole, extras: Record<string, string> = {}) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    extras: Record<string, string> = {},
+  ) => {
     const payload = await authApi.register({ username, email, password, role, ...extras });
     persistAuthPayload(payload as AuthApiPayload);
   };
 
-  const googleLogin = async (email: string, username?: string, fullName?: string, avatar?: string) => {
+  const googleLogin = async (
+    email: string,
+    username?: string,
+    fullName?: string,
+    avatar?: string,
+  ) => {
     const payload = await authApi.googleLogin({ email, username, fullName, avatar });
     persistAuthPayload(payload as AuthApiPayload);
   };
@@ -75,7 +97,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, loading, login, register, googleLogin, completeProfile, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        loading,
+        login,
+        register,
+        googleLogin,
+        completeProfile,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

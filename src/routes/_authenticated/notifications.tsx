@@ -4,7 +4,18 @@ import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { notificationsApi } from "@/lib/api";
 import type { Notification, NotificationType } from "@/types";
-import { Bell, CheckCheck, Heart, MessageCircle, Sword, UserPlus, Trophy, Trash2, Loader2, Shield } from "lucide-react";
+import {
+  Bell,
+  CheckCheck,
+  Heart,
+  MessageCircle,
+  Sword,
+  UserPlus,
+  Trophy,
+  Trash2,
+  Loader2,
+  Shield,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({ meta: [{ title: "Notifications - ConqLink" }] }),
@@ -72,12 +83,21 @@ function Notifications() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-display font-bold">Notifications</h1>
-            <p className="text-muted-foreground mt-1">{unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}</p>
+            <p className="text-muted-foreground mt-1">
+              {unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}
+            </p>
           </div>
           {unreadCount > 0 && (
-            <button onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}
-              className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:border-primary/50">
-              {markAllRead.isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCheck size={14} />}
+            <button
+              onClick={() => markAllRead.mutate()}
+              disabled={markAllRead.isPending}
+              className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:border-primary/50"
+            >
+              {markAllRead.isPending ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <CheckCheck size={14} />
+              )}
               Mark all read
             </button>
           )}
@@ -85,8 +105,11 @@ function Notifications() {
 
         <div className="mt-6 flex flex-wrap gap-2">
           {filters.map((f) => (
-            <button key={f.id} onClick={() => setFilter(f.id)}
-              className={`rounded-md border px-3 py-1.5 text-sm ${filter === f.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}>
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`rounded-md border px-3 py-1.5 text-sm ${filter === f.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
+            >
               {f.label}
             </button>
           ))}
@@ -100,15 +123,25 @@ function Notifications() {
           ) : filtered.length === 0 ? (
             <div className="py-16 text-center">
               <Bell size={36} className="mx-auto text-muted-foreground/40" />
-              <p className="mt-3 text-muted-foreground">No notifications{filter !== "all" ? ` matching "${filter}"` : ""}.</p>
+              <p className="mt-3 text-muted-foreground">
+                No notifications{filter !== "all" ? ` matching "${filter}"` : ""}.
+              </p>
             </div>
           ) : (
             filtered.map((notif) => {
               const Icon = typeIcons[notif.type] || Bell;
               return (
-                <div key={notif._id} className={`flex items-start gap-3 rounded-lg border p-4 transition-colors ${notif.isRead ? "border-border bg-card" : "border-primary/30 bg-primary/5"}`}>
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-full ${notif.isRead ? "bg-muted" : "bg-primary/10"}`}>
-                    <Icon size={16} className={notif.isRead ? "text-muted-foreground" : "text-primary"} />
+                <div
+                  key={notif._id}
+                  className={`flex items-start gap-3 rounded-lg border p-4 transition-colors ${notif.isRead ? "border-border bg-card" : "border-primary/30 bg-primary/5"}`}
+                >
+                  <div
+                    className={`flex h-9 w-9 items-center justify-center rounded-full ${notif.isRead ? "bg-muted" : "bg-primary/10"}`}
+                  >
+                    <Icon
+                      size={16}
+                      className={notif.isRead ? "text-muted-foreground" : "text-primary"}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm">{notif.message}</p>
@@ -119,11 +152,19 @@ function Notifications() {
                   </div>
                   <div className="flex gap-1">
                     {!notif.isRead && (
-                      <button onClick={() => markRead.mutate(notif._id)} className="rounded-md p-1.5 text-muted-foreground hover:bg-accent/30 hover:text-foreground" title="Mark read">
+                      <button
+                        onClick={() => markRead.mutate(notif._id)}
+                        className="rounded-md p-1.5 text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+                        title="Mark read"
+                      >
                         <CheckCheck size={14} />
                       </button>
                     )}
-                    <button onClick={() => deleteNotif.mutate(notif._id)} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Delete">
+                    <button
+                      onClick={() => deleteNotif.mutate(notif._id)}
+                      className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      title="Delete"
+                    >
                       <Trash2 size={14} />
                     </button>
                   </div>

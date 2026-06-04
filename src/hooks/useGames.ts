@@ -22,8 +22,7 @@ export function useGames() {
   const gameName = (id: GameId | string) =>
     games.find((g: any) => g.id === id)?.shortName ?? fallbackGameName(id);
 
-  const gameById = (id: GameId | string) =>
-    games.find((g: any) => g.id === id) ?? null;
+  const gameById = (id: GameId | string) => games.find((g: any) => g.id === id) ?? null;
 
   const gameIds = games.map((g: any) => g.id as GameId);
 
