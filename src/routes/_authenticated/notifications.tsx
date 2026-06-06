@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "Notifications - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Notifications - Grid Lock" }] }),
   component: Notifications,
 });
 

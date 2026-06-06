@@ -9,7 +9,7 @@ export function ScrimCard({ event, onRegister }: { event: ScrimEvent; onRegister
   const capacity = event.maxTeams || event.capacity || 1;
   const pct = Math.min(100, Math.round((registered / capacity) * 100));
   const organizer =
-    typeof event.organizer === "string" ? event.organizer : event.organizer?.username || "ConqLink";
+    typeof event.organizer === "string" ? event.organizer : event.organizer?.username || "Grid Lock";
   const date = event.date || event.scheduledAt || event.startsAt || "";
 
   return (

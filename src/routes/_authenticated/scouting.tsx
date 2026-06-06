@@ -11,7 +11,7 @@ import type { GameId, PlayerRole, Rank } from "@/types";
 import { BarChart3, Search, SlidersHorizontal, Target, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/scouting")({
-  head: () => ({ meta: [{ title: "Scouting - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Scouting - Grid Lock" }] }),
   component: Scouting,
 });
 

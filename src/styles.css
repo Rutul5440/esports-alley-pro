@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ConqLink "Obsidian Cyber-Gold & Aurora Void" design system
+/* Grid Lock "Obsidian Cyber-Gold & Aurora Void" design system
  * Deep obsidian surfaces, cyberpunk cyan-violet auroras, luminous gold accents.
  * All tokens in oklch. Never hardcode colors in components.
  */

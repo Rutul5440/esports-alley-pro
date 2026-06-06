@@ -10,7 +10,7 @@ import type { Rank, PlayerRole, GameId } from "@/types";
 import { games } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/_authenticated/explore")({
-  head: () => ({ meta: [{ title: "Explore players — ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Explore players — Grid Lock" }] }),
   component: Explore,
 });
 

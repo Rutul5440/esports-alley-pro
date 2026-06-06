@@ -11,7 +11,7 @@ import { SkeletonCard } from "@/components/feature/SkeletonCard";
 import { Eye, Heart, Play, TrendingUp, Clock, ThumbsUp, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/clips")({
-  head: () => ({ meta: [{ title: "Clips - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Clips - Grid Lock" }] }),
   component: Clips,
 });
 

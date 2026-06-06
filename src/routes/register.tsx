@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/register")({
-  head: () => ({ meta: [{ title: "Sign up - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Sign up - Grid Lock" }] }),
   component: Register,
 });
 
@@ -71,7 +71,7 @@ const GAME_CONFIG: Record<
     ],
     roles: ["IGL", "Assaulter", "Support", "Scout", "Sniper", "Fragger", "All-rounder"],
     hasUID: true,
-    uidLabel: "BGMI UID (Optional)",
+    uidLabel: "BGMI UID",
   },
   valorant: {
     name: "Valorant",
@@ -146,6 +146,16 @@ function Register() {
     website: "",
     foundedYear: "2024",
     recruitmentRegions: "India, South Asia",
+    ownerOrgRole: "Owner",
+    purposes: [] as string[],
+    discord: "",
+    isRecruiting: true,
+    openRoles: "",
+    minRankCriteria: "",
+    minKDCriteria: "0",
+    twitter: "",
+    youtube: "",
+    instagram: "",
   });
 
   const [gameData, setGameData] = useState<
@@ -258,22 +268,40 @@ function Register() {
     setStep((current) => Math.min(totalSteps, current + 1));
   };
 
-  const handleStepClick = async (targetStep: number) => {
+  const handleStepClick = (targetStep: number) => {
     if (targetStep === step) return;
-    if (targetStep > step) {
-      // Do not allow skipping forward by clicking the sidebar stepper directly.
-      // Users must strictly use the "Continue" button or hit Enter to move forward.
-      return;
-    }
     setError("");
     setStep(targetStep);
   };
 
+  const isFormValid = () => {
+    // Step 1: Account details
+    if (!form.username || form.username.trim().length < 3) return false;
+    if (!form.email || !form.email.includes("@")) return false;
+    if (!form.password || form.password.length < 6) return false;
+    if (form.password !== form.confirmPassword) return false;
+
+    // Organization specific: Organization Name (Step 1)
+    if (role === "organization") {
+      if (!form.organizationName || form.organizationName.trim() === "") return false;
+    }
+
+    // Step 2: Gaming identity (Player only)
+    if (role === "player") {
+      if (form.preferredGames.length === 0) return false;
+      // All selected games must have inGameRole and rank set
+      for (const gameId of form.preferredGames) {
+        if (!gameData[gameId]?.role || !gameData[gameId]?.rank) return false;
+      }
+    }
+
+    return true;
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (step < totalSteps) {
-      // Intercept implicit submissions (like hitting Enter) on steps 1 and 2
-      next();
+    if (!isFormValid()) {
+      setError("Please fill in all required fields across all steps before submitting.");
       return;
     }
     setError("");
@@ -293,63 +321,74 @@ function Register() {
       await completeProfile(
         role === "player"
           ? {
-              fullName: form.fullName,
-              displayName: form.fullName || form.username,
-              country: form.country,
-              dateOfBirth: form.dateOfBirth || undefined,
-              bgmiUID: cleanBGMIUID,
-              preferredGames: form.preferredGames,
-              gamePreferences: form.preferredGames.map((game) => ({
-                game,
-                rank: gameData[game]?.rank || "Bronze",
-                kd: 0,
-                winRate: 0,
-                avgDamage: 0,
-                totalMatches: 0,
-              })),
-              role:
-                form.preferredGames.length > 0
-                  ? gameData[form.preferredGames[0]]?.role || "Fragger"
-                  : "Fragger",
-              roles: form.preferredGames.map((g) => gameData[g]?.role).filter(Boolean),
-              preferredMode: form.preferredMode,
-              playStyle: form.playStyle,
-              languages: form.languages
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean),
-              bio: form.bio,
-              openToRecruit: form.openToRecruit,
-              openToTeam: form.openToTeam,
-            }
+            fullName: form.fullName,
+            displayName: form.fullName || form.username,
+            country: form.country,
+            dateOfBirth: form.dateOfBirth || undefined,
+            bgmiUID: cleanBGMIUID,
+            preferredGames: form.preferredGames,
+            gamePreferences: form.preferredGames.map((game) => ({
+              game,
+              rank: gameData[game]?.rank || "Bronze",
+              kd: 0,
+              winRate: 0,
+              avgDamage: 0,
+              totalMatches: 0,
+            })),
+            role:
+              form.preferredGames.length > 0
+                ? gameData[form.preferredGames[0]]?.role || "Fragger"
+                : "Fragger",
+            roles: form.preferredGames.map((g) => gameData[g]?.role).filter(Boolean),
+            preferredMode: form.preferredMode,
+            playStyle: form.playStyle,
+            languages: form.languages
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean),
+            bio: form.bio,
+            openToRecruit: form.openToRecruit,
+            openToTeam: form.openToTeam,
+          }
           : {
-              name: form.organizationName || form.username,
-              organizationName: form.organizationName,
-              country: form.country,
-              orgType: form.orgType,
-              website: form.website || undefined,
-              foundedYear: form.foundedYear ? Number(form.foundedYear) : undefined,
-              activeGames: form.preferredGames,
-              openRoles:
-                form.preferredGames.length > 0
-                  ? [gameData[form.preferredGames[0]]?.role || "Fragger"]
-                  : ["Fragger"],
-              recruitmentRegions: form.recruitmentRegions
+            name: form.organizationName || form.username,
+            organizationName: form.organizationName,
+            country: form.country,
+            orgType: form.orgType,
+            website: form.website || undefined,
+            foundedYear: form.foundedYear ? Number(form.foundedYear) : undefined,
+            activeGames: form.preferredGames,
+            openRoles: form.openRoles
+              ? form.openRoles
                 .split(",")
                 .map((item) => item.trim())
-                .filter(Boolean),
-              recruitmentCriteria: {
-                minRank:
-                  form.preferredGames.length > 0
-                    ? gameData[form.preferredGames[0]]?.rank || "Bronze"
-                    : "Bronze",
-                roles:
-                  form.preferredGames.length > 0
-                    ? [gameData[form.preferredGames[0]]?.role || "Fragger"]
-                    : ["Fragger"],
-                minKD: 0,
-              },
+                .filter(Boolean)
+              : [],
+            recruitmentRegions: form.recruitmentRegions
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean),
+            recruitmentCriteria: {
+              minRank: form.minRankCriteria || undefined,
+              roles: form.openRoles
+                ? form.openRoles
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter(Boolean)
+                : [],
+              minKD: form.minKDCriteria ? Number(form.minKDCriteria) : 0,
             },
+            socialLinks: {
+              twitter: form.twitter || undefined,
+              youtube: form.youtube || undefined,
+              instagram: form.instagram || undefined,
+              discord: form.discord || undefined,
+            },
+            ownerOrgRole: form.ownerOrgRole,
+            purposes: form.purposes,
+            isRecruiting: form.isRecruiting,
+            description: form.bio,
+          },
       );
       navigate({ to: "/dashboard" });
     } catch (err: any) {
@@ -365,41 +404,41 @@ function Register() {
   const roleFeatures =
     role === "player"
       ? [
-          {
-            title: "Multi-Game Portfolios",
-            desc: "Display ranks, KD, and stats across BGMI, Valorant, and CS2 in one place.",
-          },
-          {
-            title: "Verifiable Digital Badges",
-            desc: "Earn official, verifiable badges directly from custom scrims.",
-          },
-          {
-            title: "Scouting Discovery",
-            desc: "Get found by recruiters based on your roles (IGL, Sniper, Fragger).",
-          },
-          {
-            title: "Community Highlights",
-            desc: "Join clubs, upload clutch clip video links, and run polls.",
-          },
-        ]
+        {
+          title: "Multi-Game Portfolios",
+          desc: "Display ranks, KD, and stats across BGMI, Valorant, and CS2 in one place.",
+        },
+        {
+          title: "Verifiable Digital Badges",
+          desc: "Earn official, verifiable badges directly from custom scrims.",
+        },
+        {
+          title: "Scouting Discovery",
+          desc: "Get found by recruiters based on your roles (IGL, Sniper, Fragger).",
+        },
+        {
+          title: "Community Highlights",
+          desc: "Join clubs, upload clutch clip video links, and run polls.",
+        },
+      ]
       : [
-          {
-            title: "Talent Scouting Console",
-            desc: "Search, filter, and shortlist active players by specific roles, KDs, and regions.",
-          },
-          {
-            title: "Automated Scrim hosting",
-            desc: "Schedule competitive custom blocks, automate registrations, and manage results.",
-          },
-          {
-            title: "Roster assemblies",
-            desc: "Form roster setups, request specific tier ranges, and manage contracts.",
-          },
-          {
-            title: "Verified Brand Pages",
-            desc: "Gain sponsor credibility and audience growth with official corporate badges.",
-          },
-        ];
+        {
+          title: "Talent Scouting Console",
+          desc: "Search, filter, and shortlist active players by specific roles, KDs, and regions.",
+        },
+        {
+          title: "Automated Scrim hosting",
+          desc: "Schedule competitive custom blocks, automate registrations, and manage results.",
+        },
+        {
+          title: "Roster assemblies",
+          desc: "Form roster setups, request specific tier ranges, and manage contracts.",
+        },
+        {
+          title: "Verified Brand Pages",
+          desc: "Gain sponsor credibility and audience growth with official corporate badges.",
+        },
+      ];
 
   return (
     <main className="min-h-screen auth-page-bg px-4 py-8 flex flex-col items-center justify-center relative overflow-y-auto">
@@ -408,12 +447,14 @@ function Register() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60 pointer-events-none" />
 
       <div className="mx-auto w-full max-w-6xl relative z-10 animate-fade-in">
-        <Link to="/" className="mx-auto flex w-fit items-center gap-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-gold shadow-gold">
-            <Trophy size={20} className="text-primary-foreground" />
-          </span>
-          <span className="font-display text-xl font-bold tracking-tight text-white">
-            Conq<span className="text-gradient-gold">Link</span>
+        <Link to="/" className="mx-auto flex w-fit items-center gap-3">
+          <img
+            src="/grid-lock-logo-crop.JPG"
+            alt="Grid Lock Logo"
+            className="h-12 w-12 rounded-lg object-cover border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+          />
+          <span className="font-display text-2xl font-black uppercase tracking-[0.25em] pl-1.5 text-white transition-all duration-300">
+            GRID <span className="text-gradient-gold">LOCK</span>
           </span>
         </Link>
 
@@ -530,15 +571,24 @@ function Register() {
                   {step === 1 && (
                     <div className="space-y-5">
                       <div className="grid gap-4 md:grid-cols-2">
-                        <Input
-                          label={role === "player" ? "Full name" : "Organization name"}
-                          value={role === "player" ? form.fullName : form.organizationName}
-                          onChange={(v) =>
-                            update(role === "player" ? "fullName" : "organizationName", v)
-                          }
-                          placeholder="e.g. Alex Mercer"
-                          autoComplete="off"
-                        />
+                        {role === "player" ? (
+                          <Input
+                            label="Full name"
+                            value={form.fullName}
+                            onChange={(v) => update("fullName", v)}
+                            placeholder="e.g. Alex Mercer"
+                            autoComplete="off"
+                          />
+                        ) : (
+                          <Input
+                            label="Organization name"
+                            value={form.organizationName}
+                            onChange={(v) => update("organizationName", v)}
+                            placeholder="e.g. Alex Mercer"
+                            required
+                            autoComplete="off"
+                          />
+                        )}
                         <Input
                           label="Username"
                           value={form.username}
@@ -621,7 +671,7 @@ function Register() {
                       {/* 1. Games Selection Shuffled to the Top */}
                       <div className="md:col-span-2 border-b border-white/5 pb-5">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
-                          Games Played *
+                          Games Played <span className="text-red-500">*</span>
                         </span>
                         <div className="mt-2.5 flex flex-wrap gap-2">
                           {games.map((game) => (
@@ -675,7 +725,8 @@ function Register() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                               <Select
-                                label="In-Game Role *"
+                                label="In-Game Role"
+                                required
                                 value={gameData[gameId]?.role || ""}
                                 options={GAME_CONFIG[gameId]?.roles || []}
                                 onChange={(v) => {
@@ -686,7 +737,8 @@ function Register() {
                                 }}
                               />
                               <Select
-                                label="Current Rank *"
+                                label="Current Rank"
+                                required
                                 value={gameData[gameId]?.rank || ""}
                                 options={GAME_CONFIG[gameId]?.ranks || []}
                                 onChange={(v) => {
@@ -746,28 +798,17 @@ function Register() {
                         onChange={(v) => update("orgType", v)}
                       />
                       <Select
-                        label="Priority role"
-                        value={form.inGameRole}
-                        options={roles}
-                        onChange={(v) => update("inGameRole", v)}
+                        label="Your role in organization"
+                        value={form.ownerOrgRole}
+                        options={["Owner", "Manager", "Coach", "Recruiter", "Other"]}
+                        onChange={(v) => update("ownerOrgRole", v)}
                       />
-                      <Select
-                        label="Minimum rank criteria"
-                        value={form.rank}
-                        options={ranks}
-                        onChange={(v) => update("rank", v)}
-                      />
-                      <Select
-                        label="Preferred Mode"
-                        value={form.preferredMode}
-                        options={["Solo", "Duo", "Squad"]}
-                        onChange={(v) => update("preferredMode", v)}
-                      />
-                      <Select
-                        label="Play style"
-                        value={form.playStyle}
-                        options={["Aggressive", "Passive", "Balanced"]}
-                        onChange={(v) => update("playStyle", v)}
+                      <Input
+                        label="Founded year"
+                        value={form.foundedYear}
+                        onChange={(v) => update("foundedYear", v)}
+                        placeholder="e.g. 2024"
+                        autoComplete="off"
                       />
                       <Input
                         label="Website"
@@ -776,6 +817,15 @@ function Register() {
                         placeholder="e.g. esportscompany.com"
                         autoComplete="off"
                       />
+                      <div className="md:col-span-2">
+                        <Input
+                          label="Discord Server Link"
+                          value={form.discord}
+                          onChange={(v) => update("discord", v)}
+                          placeholder="e.g. https://discord.gg/invite"
+                          autoComplete="off"
+                        />
+                      </div>
                       <div className="md:col-span-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
                           Games Managed
@@ -831,18 +881,64 @@ function Register() {
                         </>
                       ) : (
                         <>
-                          <Input
-                            label="Founded year"
-                            value={form.foundedYear}
-                            onChange={(v) => update("foundedYear", v)}
-                            placeholder="e.g. 2024"
+                          <Toggle
+                            label="Actively Recruiting Players"
+                            checked={form.isRecruiting}
+                            onChange={(v) => update("isRecruiting", v)}
                           />
-                          <Input
-                            label="Recruitment regions (comma separated)"
-                            value={form.recruitmentRegions}
-                            onChange={(v) => update("recruitmentRegions", v)}
-                            placeholder="e.g. India, South Asia"
-                          />
+
+                          {form.isRecruiting && (
+                            <div className="md:col-span-2 grid gap-4 md:grid-cols-2 p-4 rounded-xl border border-white/5 bg-white/[0.01]">
+                              <Input
+                                label="Open Roles (comma separated)"
+                                value={form.openRoles}
+                                onChange={(v) => update("openRoles", v)}
+                                placeholder="e.g. IGL, Sniper, Duelist"
+                              />
+                              <Input
+                                label="Target Minimum Rank"
+                                value={form.minRankCriteria}
+                                onChange={(v) => update("minRankCriteria", v)}
+                                placeholder="e.g. Conqueror / Immortal"
+                              />
+                              <Input
+                                label="Target Minimum KD"
+                                value={form.minKDCriteria}
+                                onChange={(v) => update("minKDCriteria", v)}
+                                placeholder="e.g. 3.5"
+                                type="number"
+                                step="0.1"
+                              />
+                              <Input
+                                label="Recruitment regions (comma separated)"
+                                value={form.recruitmentRegions}
+                                onChange={(v) => update("recruitmentRegions", v)}
+                                placeholder="e.g. India, South Asia"
+                              />
+                            </div>
+                          )}
+
+                          <div className="grid gap-4 md:grid-cols-3 pt-2">
+                            <Input
+                              label="Twitter URL"
+                              value={form.twitter}
+                              onChange={(v) => update("twitter", v)}
+                              placeholder="e.g. twitter.com/org"
+                            />
+                            <Input
+                              label="YouTube URL"
+                              value={form.youtube}
+                              onChange={(v) => update("youtube", v)}
+                              placeholder="e.g. youtube.com/org"
+                            />
+                            <Input
+                              label="Instagram URL"
+                              value={form.instagram}
+                              onChange={(v) => update("instagram", v)}
+                              placeholder="e.g. instagram.com/org"
+                            />
+                          </div>
+
                           <Textarea
                             label="Organization description"
                             value={form.bio}
@@ -864,33 +960,14 @@ function Register() {
                   <p className="text-xs text-red-400 font-semibold text-left flex-1">{error}</p>
                 )}
 
-                <div className="flex gap-3 ml-auto w-full sm:w-auto justify-end">
+                <div className="w-full sm:w-auto flex justify-end">
                   <button
-                    type="button"
-                    disabled={step === 1}
-                    onClick={() => setStep((current) => Math.max(1, current - 1))}
-                    className="rounded-md border border-white/10 px-5 py-2.5 text-xs font-semibold text-white hover:bg-white/[0.04] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                    type="submit"
+                    disabled={!isFormValid()}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-md bg-gradient-gold px-7 py-3 text-xs font-bold text-[#141416] shadow-gold uppercase tracking-wider font-display transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                   >
-                    Back
+                    Let's begin the journey
                   </button>
-                  {step < totalSteps ? (
-                    <button
-                      key="btn-continue"
-                      type="button"
-                      onClick={next}
-                      className="rounded-md bg-gradient-gold px-5 py-2.5 text-xs font-bold text-[#141416] shadow-gold uppercase tracking-wider font-display"
-                    >
-                      Continue
-                    </button>
-                  ) : (
-                    <button
-                      key="btn-submit"
-                      type="submit"
-                      className="inline-flex items-center gap-2 rounded-md bg-gradient-gold px-5 py-2.5 text-xs font-bold text-[#141416] shadow-gold uppercase tracking-wider font-display"
-                    >
-                      Create account
-                    </button>
-                  )}
                 </div>
               </div>
             </form>
@@ -923,7 +1000,7 @@ function RoleCard({
           : "border-white/5 bg-white/[0.01] text-zinc-400 hover:border-primary/40 hover:bg-white/[0.04]",
       )}
     >
-      <Icon size={18} className="text-primary shrink-0" />
+      <Icon size={18} className={cn("shrink-0 transition-colors", active ? "text-primary-foreground" : "text-primary")} />
       <span className="font-display text-sm font-bold">{title}</span>
     </button>
   );
@@ -979,16 +1056,18 @@ function Select({
   value,
   options,
   onChange,
+  required,
 }: {
   label: string;
   value: string;
   options: string[];
   onChange: (value: string) => void;
+  required?: boolean;
 }) {
   return (
     <label className="block">
       <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
-        {label}
+        {label} {required && <span className="text-red-500">*</span>}
       </span>
       <select
         value={value}

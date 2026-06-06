@@ -23,7 +23,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 
 export const Route = createFileRoute("/_authenticated/community")({
-  head: () => ({ meta: [{ title: "Community - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Community - Grid Lock" }] }),
   component: Community,
 });
 
@@ -72,7 +72,7 @@ function Community() {
       clubsApi.create({
         name: clubName,
         gameTag: game === "all" ? "bgmi" : game,
-        description: clubDesc || "A new ConqLink club.",
+        description: clubDesc || "A new Grid Lock club.",
         isPrivate: false,
       }),
     onSuccess: () => {
@@ -284,7 +284,7 @@ function Community() {
                         <Shield className="text-primary" size={20} />
                       </div>
                       <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                        {club.description || "A ConqLink community club."}
+                        {club.description || "A Grid Lock community club."}
                       </p>
                       <button
                         onClick={() =>

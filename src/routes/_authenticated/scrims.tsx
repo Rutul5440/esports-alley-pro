@@ -15,7 +15,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { CalendarPlus, ClipboardList, Loader2, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/scrims")({
-  head: () => ({ meta: [{ title: "Scrims - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Scrims - Grid Lock" }] }),
   component: Scrims,
 });
 

@@ -13,7 +13,7 @@ import { StatCard } from "@/components/feature/StatCard";
 import { ImagePlus, Send, Trophy, Users, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Feed - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Feed - Grid Lock" }] }),
   component: Dashboard,
 });
 

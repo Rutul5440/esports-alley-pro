@@ -26,7 +26,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ConqLink — The Professional Network for Esports Players" },
+      { title: "Grid Lock — The Professional Network for Esports Players" },
       {
         name: "description",
         content:
@@ -120,7 +120,7 @@ type GameKey = keyof typeof GAME_MATRIX;
 function Landing() {
   const [selectedGame, setSelectedGame] = useState<GameKey>("bgmi");
   const [consoleLog, setConsoleLog] = useState<string[]>([
-    "SYS // CONQLINK CORE SECURE V2.4 ONLINE",
+    "SYS // GRID LOCK CORE SECURE V2.4 ONLINE",
     "NET // Scrim server connection successfully routed",
     "DB // Loaded 3 active organization scouting profiles",
   ]);
@@ -141,7 +141,7 @@ function Landing() {
       "ALERT: GodLike Esports scout filtered profiles by region: India",
       "SUCCESS: Faceit level 10 rank verification completed for user 'AWP_King'",
       "RECRUIT: Entity Gaming reviewed 14 highlight clips today",
-      "VERIFIED: Valorant tournament analytics uploaded to ConqLink stats db",
+      "VERIFIED: Valorant tournament analytics uploaded to Grid Lock stats db",
     ];
 
     const interval = setInterval(() => {
@@ -164,7 +164,7 @@ function Landing() {
             {/* COPYWRITING CONTAINER */}
             <div className="lg:col-span-7 text-left space-y-6">
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-gold/30 bg-gold/10 text-gold text-xs font-bold uppercase tracking-wider font-mono shadow-[0_0_15px_rgba(212,175,55,0.05)]">
-                <Sparkles size={13} className="animate-pulse" /> Unified Esports Matrix
+                <Sparkles size={13} className="animate-pulse" /> LOCK IN. DOMINATE THE GRID.
               </span>
 
               <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight leading-[1.05] uppercase">
@@ -514,7 +514,7 @@ function Landing() {
               className={`bg-card/30 backdrop-blur-sm border ${accent} rounded-2xl p-6 hover-lift hover:bg-card/65 transition-all shadow-elevated duration-300 relative overflow-hidden group`}
             >
               <div className="w-12 h-12 rounded-xl bg-white/[0.02] border border-white/10 text-gold flex items-center justify-center mb-5 group-hover:border-gold/40 group-hover:text-primary-foreground group-hover:bg-gradient-gold shadow-md transition-all duration-300">
-                <Icon size={20} />
+                <Icon size={20} className="text-primary group-hover:text-primary-foreground transition-colors shrink-0" />
               </div>
               <h3 className="font-display font-bold text-lg text-foreground uppercase tracking-tight">
                 {title}

@@ -19,12 +19,14 @@ export function AppShell({
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-gold shadow-gold">
-                    <Trophy size={16} className="text-primary-foreground" />
-                  </span>
-                  <span className="font-display text-lg font-bold">
-                    Conq<span className="text-gradient-gold">Link</span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/grid-lock-logo-crop.JPG"
+                    alt="Grid Lock Logo"
+                    className="h-10 w-10 rounded-lg object-cover border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                  />
+                  <span className="font-display text-xl font-black uppercase tracking-[0.25em] pl-1.5 transition-all duration-300">
+                    GRID <span className="text-gradient-gold">LOCK</span>
                   </span>
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground/80">
@@ -105,7 +107,7 @@ export function AppShell({
               </div>
             </div>
             <div className="mt-12 border-t border-white/5 pt-8 text-center text-xs text-muted-foreground/50">
-              © {new Date().getFullYear()} ConqLink. Powered by Esports Alley. Crafted for
+              © {new Date().getFullYear()} Grid Lock. Powered by Esports Alley. Crafted for
               professional esports ecosystems.
             </div>
           </div>

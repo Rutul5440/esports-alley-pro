@@ -80,12 +80,14 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-40 border-b border-white/5 bg-background/40 backdrop-blur-lg shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link to="/" className="group flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-gold shadow-gold">
-              <Trophy size={18} className="text-primary-foreground" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Conq<span className="text-gradient-gold">Link</span>
+          <Link to="/" className="group flex items-center gap-3">
+            <img
+              src="/grid-lock-logo-crop.JPG"
+              alt="Grid Lock Logo"
+              className="h-10 w-10 rounded-lg object-cover border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+            />
+            <span className="font-display text-xl font-black uppercase tracking-[0.25em] pl-1.5 transition-all duration-300">
+              GRID <span className="text-gradient-gold">LOCK</span>
             </span>
           </Link>
 

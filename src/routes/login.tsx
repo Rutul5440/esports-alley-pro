@@ -18,7 +18,7 @@ import type { UserRole } from "@/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Log in - ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Log in - Grid Lock" }] }),
   component: Login,
 });
 
@@ -96,12 +96,14 @@ function Login() {
         <section className="flex flex-col justify-between p-6 sm:p-10 lg:p-12 relative overflow-hidden bg-black/15 border-b lg:border-b-0 lg:border-r border-white/5">
           <div className="absolute inset-0 bg-gradient-hero pointer-events-none opacity-40" />
 
-          <Link to="/" className="inline-flex w-fit items-center gap-2 relative z-10">
-            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-gold shadow-gold">
-              <Trophy size={20} className="text-primary-foreground" />
-            </span>
-            <span className="font-display text-xl font-bold tracking-tight text-white">
-              Conq<span className="text-gradient-gold">Link</span>
+          <Link to="/" className="inline-flex w-fit items-center gap-3 relative z-10">
+            <img
+              src="/grid-lock-logo-crop.JPG"
+              alt="Grid Lock Logo"
+              className="h-12 w-12 rounded-lg object-cover border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+            />
+            <span className="font-display text-2xl font-black uppercase tracking-[0.25em] pl-1.5 text-white transition-all duration-300">
+              GRID <span className="text-gradient-gold">LOCK</span>
             </span>
           </Link>
 
@@ -119,7 +121,7 @@ function Login() {
             </h1>
 
             <p className="mt-4 text-xs leading-5 text-zinc-300 md:text-sm md:leading-6">
-              ConqLink is the premium professional career platform for gamers. We connect
+              Grid Lock is the premium professional career platform for gamers. We connect
               competitive players, game creators, tournament organizers, and top-tier esports clans
               to bridge the gap from highlight clips to professional contracts.
             </p>
@@ -163,7 +165,7 @@ function Login() {
           </div>
 
           <p className="text-[10px] text-zinc-500 relative z-10 mt-6 font-mono">
-            ConqLink Platform © 2026. Made for elite gamers moving from clips to corporate
+            Grid Lock Platform © 2026. Made for elite gamers moving from clips to corporate
             contracts.
           </p>
         </section>
@@ -176,7 +178,7 @@ function Login() {
                 <h2 className="font-display text-2xl font-bold text-white tracking-tight">
                   Welcome Back
                 </h2>
-                <p className="mt-1 text-xs text-zinc-400">Select role and sign in to ConqLink.</p>
+                <p className="mt-1 text-xs text-zinc-400">Select role and sign in to Grid Lock.</p>
               </div>
               <BadgeCheck className="text-primary mt-1" size={24} />
             </div>
@@ -249,7 +251,7 @@ function Login() {
             </form>
 
             <p className="mt-6 text-center text-xs text-zinc-400">
-              New to ConqLink?{" "}
+              New to Grid Lock?{" "}
               <Link
                 to="/register"
                 className="font-bold text-primary hover:underline hover:text-primary/80 transition-colors"

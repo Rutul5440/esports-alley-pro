@@ -7,7 +7,7 @@ import { UploadCloud, Film, X, Loader2, CheckCircle2, Tag } from "lucide-react";
 import type { GameId } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/upload")({
-  head: () => ({ meta: [{ title: "Upload clip — ConqLink" }] }),
+  head: () => ({ meta: [{ title: "Upload clip — Grid Lock" }] }),
   component: UploadClip,
 });
 

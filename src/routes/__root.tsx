@@ -67,13 +67,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ConqLink — The Professional Network for Esports Players" },
+      { title: "Grid Lock — The Professional Network for Esports Players" },
       {
         name: "description",
         content:
           "Multi-game esports platform. Showcase rank, stats, clips across BGMI, Valorant, CS2 & more. Get scouted by orgs.",
       },
-      { property: "og:title", content: "ConqLink — The Professional Network for Esports Players" },
+      { property: "og:title", content: "Grid Lock — The Professional Network for Esports Players" },
       {
         property: "og:description",
         content:
@@ -82,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
     ],
     links: [
+      { rel: "icon", href: "/grid-lock-logo-crop.JPG", type: "image/jpeg" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },

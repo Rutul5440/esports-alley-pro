@@ -39,7 +39,7 @@ function GoogleAuthMock() {
       window.close();
     } else {
       alert(
-        "This popup was opened directly. Click on 'Continue with Google' inside the ConqLink app to authenticate properly.",
+        "This popup was opened directly. Click on 'Continue with Google' inside the Grid Lock app to authenticate properly.",
       );
     }
   };
@@ -62,7 +62,7 @@ function GoogleAuthMock() {
           </div>
           <h1 className="mt-4 font-display text-xl font-bold tracking-tight text-white">Google</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            Sign in to continue to <span className="text-primary font-semibold">ConqLink</span>
+            Sign in to continue to <span className="text-primary font-semibold">Grid Lock</span>
           </p>
         </div>
 
@@ -171,7 +171,7 @@ function GoogleAuthMock() {
         {/* Footer info */}
         <div className="mt-8 border-t border-white/5 pt-6 text-center text-xs leading-relaxed text-zinc-500">
           To continue, Google will share your name, email address, language preference, and profile
-          picture with ConqLink. See ConqLink's Privacy Policy and Terms of Service.
+          picture with Grid Lock. See Grid Lock's Privacy Policy and Terms of Service.
         </div>
       </div>
     </main>

@@ -119,7 +119,23 @@ export interface OrganizationProfile {
   verified?: boolean;
   followers: number;
   activeGames: GameId[];
-  openRoles: PlayerRole[];
+  openRoles: string[];
+  ownerOrgRole?: string;
+  purposes?: string[];
+  isRecruiting?: boolean;
+  foundedYear?: number;
+  website?: string;
+  socialLinks?: {
+    twitter?: string;
+    youtube?: string;
+    instagram?: string;
+    discord?: string;
+  };
+  recruitmentCriteria?: {
+    minRank?: string;
+    roles?: string[];
+    minKD?: number;
+  };
 }
 
 export interface FeedPost {
